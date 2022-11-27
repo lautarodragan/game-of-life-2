@@ -96,6 +96,14 @@ document.addEventListener('DOMContentLoaded', () => {
       event.preventDefault()
       gameInterval.intervalTime += 20
       console.log('speed', gameInterval.intervalTime)
+    } else if (event.code === 'ArrowUp') {
+      event.preventDefault()
+      game.decay += 8
+      console.log('decay', game.decay)
+    } else if (event.code === 'ArrowDown') {
+      event.preventDefault()
+      game.decay -= 8
+      console.log('decay', game.decay)
     }
   })
 
