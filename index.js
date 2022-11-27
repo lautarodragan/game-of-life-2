@@ -9,10 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const program = createProgram(gl)
   const game = new GameOfLife(20, 20)
-  let zoom = 40
-  let cameraX = 0
-  let cameraY = 0
   let pencil = 1
+  const camera = {
+    x: 0,
+    y: 0,
+    z: 40,
+  }
 
   const gameInterval = new Interval(() => {
     game.nextStep()
@@ -30,12 +32,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const mouseEventToBoardCoords = (event) => ({
-    x: Math.floor((event.x - cameraX) / zoom),
-    y: Math.floor((canvas.height - event.y - cameraY) / zoom),
+    x: Math.floor((event.x - camera.x) / camera.z),
+    y: Math.floor((canvas.height - event.y - camera.y) / camera.z),
   })
 
   requestAnimationFrame(function animationFrame() {
-    renderer.render(zoom, cameraX, cameraY)
+    renderer.render(camera)
     window.requestAnimationFrame(animationFrame)
   })
 
@@ -64,9 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (event.buttons === 2) {
       event.preventDefault()
-      cameraX += event.movementX
-      cameraY -= event.movementY
-      console.log('camera', cameraX, cameraY)
+      camera.x += event.movementX
+      camera.y -= event.movementY
     }
   })
 
@@ -81,10 +82,10 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
   document.addEventListener('wheel', event => {
-    const newZoom = zoom - Math.sign(event.deltaY)
+    const newZoom = camera.z - Math.sign(event.deltaY)
 
     if (newZoom > 10)
-      zoom = newZoom
+      camera.z = newZoom
   })
 
   refreshViewPortSize()

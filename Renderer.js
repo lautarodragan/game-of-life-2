@@ -18,17 +18,17 @@ export const Renderer = (game, gl) => {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
   }
 
-  function render(zoom, cameraX, cameraY) {
+  function render(camera) {
     gl.clearColor(.5, .5, .5, 1)
     gl.clear(gl.COLOR_BUFFER_BIT)
 
     for (let x = 0; x < game.width; x++)
       for (let y = 0; y < game.height; y++)
         drawRect(
-          x * zoom + cameraX,
-          y * zoom + cameraY,
-          zoom,
-          zoom,
+          x * camera.z + camera.x,
+          y * camera.z + camera.y,
+          camera.z,
+          camera.z,
           game.getValue(x, y) ? [Math.random(), Math.random(), Math.random()] : [0, 0, 0],
         )
   }
