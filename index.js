@@ -7,10 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const gl = canvas.getContext('webgl2',  { alpha: false })
 
   const program = createProgram(gl)
-
   const game = new GameOfLife(20, 20)
-
   const zoom = 40
+  let paused = true
 
   gl.clearDepth(1)
   gl.disable(gl.DEPTH_TEST)
@@ -66,10 +65,18 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('mousedown', event => {
     const x = Math.floor(event.x / zoom)
     const y = Math.floor((canvas.height - event.y) / zoom)
-    // debugger
-    console.log(x, y)
-
     game.toggleValue(x, y)
+  })
+
+  setInterval(() => {
+    if (!paused)
+      game.nextStep()
+  }, 200)
+
+  document.addEventListener('keydown', event => {
+    console.log('keydown', event.code)
+    if (event.code === 'Space')
+      paused = !paused
   })
 
   refreshViewPortSize()
