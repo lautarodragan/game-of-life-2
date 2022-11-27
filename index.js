@@ -14,8 +14,23 @@ document.addEventListener('DOMContentLoaded', () => {
     z: 40,
   }
 
+  let performanceSampleCount = 0
+  let performanceAverage = 0
   const gameInterval = new Interval(() => {
+    const start = performance.now()
+
     game.nextStep()
+
+    performanceSampleCount++
+    const measure = performance.now() - start
+
+    if (performanceSampleCount > 1)
+      performanceAverage = performanceAverage * (performanceSampleCount - 1) / performanceSampleCount + measure / performanceSampleCount
+    else
+      performanceAverage = measure
+
+    document.title = `Avg: ${Math.round(performanceAverage)}`
+    // console.log(`This run: ${Math.round(measure)}`, `Avg: ${Math.round(performanceAverage)}`)
   }, 200)
 
   const renderer = Renderer(game, gl)
