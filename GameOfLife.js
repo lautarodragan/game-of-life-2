@@ -2,7 +2,9 @@ import { Matrix } from './Matrix.js';
 
 export class GameOfLife {
   constructor(width, height) {
-    this.matrix = new Matrix(width, height);
+    this.matrix1 = new Matrix(width, height);
+    this.matrix2 = new Matrix(width, height);
+    this.matrix = this.matrix1
   }
 
   get width() {
@@ -30,18 +32,19 @@ export class GameOfLife {
   }
 
   nextStep() {
-    const newState = new Matrix(this.matrix.width, this.matrix.height);
+    const oldMatrix = this.matrix
+    const newMatrix = this.matrix === this.matrix1 ? this.matrix2 : this.matrix1
 
-    for (let x = 0; x < this.matrix.width; x++) {
-      for (let y = 0; y < this.matrix.height; y++) {
+    for (let x = 0; x < newMatrix.width; x++) {
+      for (let y = 0; y < newMatrix.height; y++) {
         const liveNeighbours = this.getLiveNeighbourCount(x, y);
-        const newValue = this.getCellState(this.matrix.getValue(x, y), liveNeighbours);
+        const newValue = this.getCellState(oldMatrix.getValue(x, y), liveNeighbours);
 
-        newState.setValue(x, y, newValue);
+        newMatrix.setValue(x, y, newValue);
       }
     }
 
-    this.matrix = newState;
+    this.matrix = newMatrix;
   }
 
   getLiveNeighbourCount(dx, dy) {
