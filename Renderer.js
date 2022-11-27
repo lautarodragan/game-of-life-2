@@ -41,9 +41,8 @@ export const Renderer = (game, gl) => {
   }
 
   function render(camera) {
-    // gl.clearColor(.5, .5, .5, 1)
-    // gl.clearColor(0, 0, 0, .01)
-    // gl.clear(gl.COLOR_BUFFER_BIT)
+    gl.clearColor(0, 0, 0, 1)
+    gl.clear(gl.COLOR_BUFFER_BIT)
 
     for (let x = 0; x < game.width; x++)
       for (let y = 0; y < game.height; y++)
@@ -53,7 +52,7 @@ export const Renderer = (game, gl) => {
             y * camera.z + camera.y,
             camera.z,
             camera.z,
-            [Math.random(), Math.random(), Math.random(), 1],
+            [Math.random() * game.getValue(x, y) / 0xff, Math.random() * game.getValue(x, y) / 0xff, Math.random() * game.getValue(x, y) / 0xff, 1],
           )
   }
 

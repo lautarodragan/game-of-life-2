@@ -1,12 +1,13 @@
 import { Matrix } from './Matrix.js';
 
 export const GameOfLife = (width, height) => {
+  const decay = 0x1f
   const matrix1 = new Matrix(width, height);
   const matrix2 = new Matrix(width, height);
   let matrix = matrix1
 
   const toggleValue = (x, y) => {
-    matrix.setValue(x, y, !matrix.getValue(x, y))
+    matrix.setValue(x, y, matrix.getValue(x, y) ? 0 : 0xff)
   }
 
   const nextStep = () => {
@@ -31,11 +32,18 @@ export const GameOfLife = (width, height) => {
       for (let y = dy - 1; y < dy + 2; y++) {
         if (x === dx && y === dy)
           continue;
-        if (matrix.isInBounds(x, y) && matrix.getValue(x, y))
+        if (matrix.isInBounds(x, y) && matrix.getValue(x, y) === 0xff)
           count++;
       }
     }
     return count;
+  }
+
+  const getCellState = (state, liveNeighbours) => {
+    if (state === 0xff)
+      return liveNeighbours < 2 || liveNeighbours > 3 ? Math.max(state - decay, 0) : 0xff;
+    else
+      return liveNeighbours === 3 ? 0xff : Math.max(state - decay, 0);
   }
 
   return {
@@ -50,9 +58,4 @@ export const GameOfLife = (width, height) => {
 
 }
 
-const getCellState = (state, liveNeighbours) => {
-  if (state === 1)
-    return liveNeighbours < 2 || liveNeighbours > 3 ? 0 : 1;
-  else
-    return liveNeighbours === 3 ? 1 : 0;
-}
+
