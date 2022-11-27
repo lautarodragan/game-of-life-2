@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const game = new GameOfLife(20, 20)
   let zoom = 40
   let paused = true
+  let pencil = 0
 
   gl.clearDepth(1)
   gl.disable(gl.DEPTH_TEST)
@@ -63,9 +64,20 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
   document.addEventListener('mousedown', event => {
+    console.log('mousedown')
     const x = Math.floor(event.x / zoom)
     const y = Math.floor((canvas.height - event.y) / zoom)
     game.toggleValue(x, y)
+    pencil = game.getValue(x, y)
+  })
+
+  document.addEventListener('mousemove', event => {
+    if (event.buttons) {
+      console.log('mousemove', event.key)
+      const x = Math.floor(event.x / zoom)
+      const y = Math.floor((canvas.height - event.y) / zoom)
+      game.setValue(x, y, pencil)
+    }
   })
 
   setInterval(() => {
