@@ -33,7 +33,12 @@ export const Renderer = (game, gl) => {
         )
   }
 
+  function setViewPortSize(width, height) {
+    gl.viewport(0, 0, width, height)
+  }
+
   return {
     render,
+    setViewPortSize,
   }
 }

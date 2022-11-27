@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('resize', width, height)
     canvas.width = width
     canvas.height = height
-    gl.viewport(0, 0, width, height)
+    renderer.setViewPortSize(width, height)
   }
 
   requestAnimationFrame(function animationFrame() {
