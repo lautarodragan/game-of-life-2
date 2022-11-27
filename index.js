@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const program = createProgram(gl)
   const game = new GameOfLife(20, 20)
-  const zoom = 40
+  let zoom = 40
   let paused = true
 
   gl.clearDepth(1)
@@ -77,6 +77,13 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('keydown', event.code)
     if (event.code === 'Space')
       paused = !paused
+  })
+
+  document.addEventListener('wheel', event => {
+    const newZoom = zoom - Math.sign(event.deltaY)
+
+    if (newZoom > 10)
+      zoom = newZoom
   })
 
   refreshViewPortSize()
