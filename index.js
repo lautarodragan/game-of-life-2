@@ -18,12 +18,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   window.camera = camera
 
-  const onPerformance = (averageMeasure) => {
+  const onGamePerformance = (averageMeasure) => {
     // document.title = `Avg: ${Math.round(averageMeasure)}`
   }
 
+  const onRenderPerformance = (averageMeasure) => {
+    document.title = `Avg: ${Math.round(averageMeasure)}`
+  }
+
   const gameInterval = new Interval(
-    withPerformance(game.nextStep, 10, onPerformance),
+    withPerformance(game.nextStep, 10, onGamePerformance),
     200,
   )
 
@@ -47,8 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
     y: Math.floor((canvas.height - event.y + camera.y - camera.h / 2) / camera.z + game.height / 2),
   })
 
+  const renderWithPerformance = withPerformance(renderer.render, 10, onRenderPerformance)
+
   requestAnimationFrame(function animationFrame() {
-    renderer.render(camera)
+    renderWithPerformance(camera)
     window.requestAnimationFrame(animationFrame)
   })
 

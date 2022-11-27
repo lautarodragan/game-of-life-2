@@ -2,10 +2,10 @@ export const withPerformance = (fn, updateFrequency, updateCallback) => {
   let performanceSampleCount = 0
   let performanceAverage = 0
 
-  return () => {
+  return (...args) => {
     const start = performance.now()
 
-    fn()
+    fn(...args)
 
     performanceSampleCount++
     const measure = performance.now() - start
