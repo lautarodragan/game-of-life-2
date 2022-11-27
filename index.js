@@ -115,6 +115,9 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (event.code === 'KeyR' && !event.ctrlKey) {
       event.preventDefault()
       game.clear()
+    } else if (event.code === 'KeyF' && !event.ctrlKey) {
+      event.preventDefault()
+      game.random()
     }
   })
 

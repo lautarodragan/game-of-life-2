@@ -51,6 +51,12 @@ export const GameOfLife = (width, height) => {
     matrix2.clear()
   }
 
+  const random = () => {
+    for (let i = 0; i < matrix1.cells.length; i++) {
+      matrix1.cells[i] = matrix2.cells[i] = Math.random() > .75 ? 0xff : 0
+    }
+  }
+
   return {
     get width() { return width },
     get height() { return height },
@@ -62,6 +68,7 @@ export const GameOfLife = (width, height) => {
     toggleValue,
     nextStep,
     clear,
+    random,
   }
 
 }
