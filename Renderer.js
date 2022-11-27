@@ -10,7 +10,9 @@ export const Renderer = (game, gl) => {
 
   gl.clearDepth(1)
   gl.disable(gl.DEPTH_TEST)
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+  gl.enable(gl.BLEND)
+  // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+  gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
 
   const uColor = gl.getUniformLocation(program, 'uColor')
   const uResolution = gl.getUniformLocation(program, 'uResolution')
@@ -38,27 +40,20 @@ export const Renderer = (game, gl) => {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
   }
 
-  function renderCircle(x, y, w, h) {
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-    gl.bufferData(gl.ARRAY_BUFFER, positionsWorld(x, y, w, h), gl.STATIC_DRAW)
-
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
-  }
-
   function render(camera) {
-    gl.clearColor(.5, .5, .5, 1)
+    // gl.clearColor(.5, .5, .5, 1)
     // gl.clearColor(0, 0, 0, .01)
-    gl.clear(gl.COLOR_BUFFER_BIT)
-
+    // gl.clear(gl.COLOR_BUFFER_BIT)
 
     for (let x = 0; x < game.width; x++)
       for (let y = 0; y < game.height; y++)
+        if (game.getValue(x, y))
         drawRect(
           x * camera.z + camera.x,
           y * camera.z + camera.y,
           camera.z,
           camera.z,
-          game.getValue(x, y) ? [Math.random(), Math.random(), Math.random(), 1] : [0, 0, 0, 1],
+          game.getValue(x, y) ? [Math.random(), Math.random(), Math.random(), 1] : [0, 0, 0, 0],
         )
   }
 
