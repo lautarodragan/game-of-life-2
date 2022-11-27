@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementsByTagName('canvas')[0]
   const gl = canvas.getContext('webgl2',  { alpha: false })
 
-  const game = GameOfLife(50, 50)
+  const game = GameOfLife(100, 100)
   let pencil = 1
   const camera = {
     x: 0,
@@ -120,13 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const newZoom = camera.z - sign
 
     if (newZoom >= 1) {
-      // const zoomOriginX = event.x
-      // const zoomOriginY = event.y
-      // camera.x += zoomOriginX - Math.sign(event.deltaY) * canvas.width / 2
-      // camera.y += zoomOriginY - Math.sign(event.deltaY) * canvas.height / 2
-      // camera.x += Math.sign(event.deltaY) * 200
-      // camera.x -= (canvas.width / 2 - event.x) / 2 * sign / camera.z
-      // camera.y -= (canvas.height / 2 - event.y) / 2 * sign / camera.z
       debugCamera()
       camera.z = newZoom
     }
