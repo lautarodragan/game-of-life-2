@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
   gl.clearDepth(1)
   gl.disable(gl.DEPTH_TEST)
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-  gl.enable(gl.SCISSOR_TEST);
 
 
   function renderCircle(x, y, w, h) {
@@ -24,9 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function drawRect(x, y, width, height, color) {
+    gl.enable(gl.SCISSOR_TEST);
     gl.scissor(x, y, width, height);
-    gl.clearColor(Math.random(), Math.random(), Math.random(), 1);
+    gl.clearColor(...color, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.disable(gl.SCISSOR_TEST)
   }
 
   function refreshViewPortSize() {
@@ -46,8 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     for (let x = 0; x < game.width; x++)
       for (let y = 0; y < game.height; y++)
-        if (game.getValue(x, y))
-          drawRect(x * zoom, y * zoom, zoom, zoom)
+        drawRect(x * zoom, y * zoom, zoom, zoom, game.getValue(x, y) ? [Math.random(), Math.random(), Math.random()] : [0, 0, 0])
     window.requestAnimationFrame(animationFrame)
   })
 
