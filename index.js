@@ -27,6 +27,11 @@ document.addEventListener('DOMContentLoaded', () => {
     renderer.setViewPortSize(width, height)
   }
 
+  const mouseEventToBoardCoords = (event) => ({
+    x: Math.floor(event.x / zoom),
+    y: Math.floor((canvas.height - event.y) / zoom),
+  })
+
   requestAnimationFrame(function animationFrame() {
     renderer.render(zoom)
     window.requestAnimationFrame(animationFrame)
@@ -37,8 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
   document.addEventListener('mousedown', event => {
-    const x = Math.floor(event.x / zoom)
-    const y = Math.floor((canvas.height - event.y) / zoom)
+    const { x, y } = mouseEventToBoardCoords(event)
 
     if (!game.isInBounds(x, y))
       return
@@ -49,8 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.addEventListener('mousemove', event => {
     if (event.buttons) {
-      const x = Math.floor(event.x / zoom)
-      const y = Math.floor((canvas.height - event.y) / zoom)
+      const { x, y } = mouseEventToBoardCoords(event)
 
       if (!game.isInBounds(x, y))
         return
