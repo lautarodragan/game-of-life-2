@@ -17,10 +17,17 @@ export class Matrix {
   }
 
   getValue(x, y) {
+    if (!this.isInBounds(x, y)) {
+      throw new Error(`Not in bounds: ${x}, ${y}`)
+    }
     return this.cells[x][y];
   }
 
   setValue(x, y, value) {
+    if (!this.isInBounds(x, y)) {
+      throw new Error(`Not in bounds: ${x}, ${y}`)
+    }
+
     this.cells[x][y] = value;
   }
 

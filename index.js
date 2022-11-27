@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const game = new GameOfLife(20, 20)
 
+  const zoom = 40
+
   gl.clearDepth(1)
   gl.disable(gl.DEPTH_TEST)
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
@@ -39,15 +41,21 @@ document.addEventListener('DOMContentLoaded', () => {
     gl.viewport(0, 0, width, height)
   }
 
-  const zoom = 10
-
   requestAnimationFrame(function animationFrame() {
     gl.clearColor(.5, .5, .5, 1)
     gl.clear(gl.COLOR_BUFFER_BIT)
 
     for (let x = 0; x < game.width; x++)
       for (let y = 0; y < game.height; y++)
-        drawRect(x * zoom, y * zoom, zoom, zoom, game.getValue(x, y) ? [Math.random(), Math.random(), Math.random()] : [0, 0, 0])
+        drawRect(
+          x * zoom,
+          y * zoom,
+          zoom,
+          zoom,
+          game.getValue(x, y) ? [Math.random(), Math.random(), Math.random()] : [0, 0, 0],
+        )
+
+
     window.requestAnimationFrame(animationFrame)
   })
 
@@ -56,8 +64,9 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
   document.addEventListener('mousedown', event => {
-    const x = Math.floor(event.x / canvas.width * zoom * game.width)
-    const y = Math.floor((canvas.height - event.y) / canvas.height * zoom * game.height)
+    const x = Math.floor(event.x / zoom)
+    const y = Math.floor((canvas.height - event.y) / zoom)
+    // debugger
     console.log(x, y)
 
     game.toggleValue(x, y)
