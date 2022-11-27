@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const program = createProgram(gl)
   const game = new GameOfLife(20, 20)
   let zoom = 40
+  let cameraX = 0
+  let cameraY = 0
   let pencil = 1
 
   const gameInterval = new Interval(() => {
@@ -28,12 +30,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const mouseEventToBoardCoords = (event) => ({
-    x: Math.floor(event.x / zoom),
-    y: Math.floor((canvas.height - event.y) / zoom),
+    x: Math.floor((event.x - cameraX) / zoom),
+    y: Math.floor((canvas.height - event.y - cameraY) / zoom),
   })
 
   requestAnimationFrame(function animationFrame() {
-    renderer.render(zoom)
+    renderer.render(zoom, cameraX, cameraY)
     window.requestAnimationFrame(animationFrame)
   })
 
@@ -52,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
   document.addEventListener('mousemove', event => {
-    if (event.buttons) {
+    if (event.buttons === 1) {
       const { x, y } = mouseEventToBoardCoords(event)
 
       if (!game.isInBounds(x, y))
@@ -60,6 +62,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
       game.setValue(x, y, pencil)
     }
+    if (event.buttons === 2) {
+      event.preventDefault()
+      cameraX += event.movementX
+      cameraY -= event.movementY
+      console.log('camera', cameraX, cameraY)
+    }
+  })
+
+  document.addEventListener('contextmenu', event => {
+    event.preventDefault()
   })
 
   document.addEventListener('keydown', event => {
