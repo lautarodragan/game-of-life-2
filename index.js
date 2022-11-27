@@ -1,4 +1,5 @@
 import { createProgram } from './createProgram.js'
+import { GameOfLife } from './GameOfLife.js'
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementsByTagName('canvas')[0]
@@ -6,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const gl = canvas.getContext('webgl2',  { alpha: false })
 
   const program = createProgram(gl)
+
+  const game = new GameOfLife(20, 20)
 
   gl.clearDepth(1)
   gl.disable(gl.DEPTH_TEST)
@@ -35,14 +38,16 @@ document.addEventListener('DOMContentLoaded', () => {
     gl.viewport(0, 0, width, height)
   }
 
+  const zoom = 10
+
   requestAnimationFrame(function animationFrame() {
     gl.clearColor(.5, .5, .5, 1)
     gl.clear(gl.COLOR_BUFFER_BIT)
 
-    for (let x = 0; x < 10; x++)
-      for (let y = 0; y < 10; y++)
-        if ((x + y) % 3 === 0)
-          drawRect(x * 10, y * 10, 10, 10)
+    for (let x = 0; x < game.width; x++)
+      for (let y = 0; y < game.height; y++)
+        if (game.getValue(x, y))
+          drawRect(x * zoom, y * zoom, zoom, zoom)
     window.requestAnimationFrame(animationFrame)
   })
 
