@@ -46,13 +46,15 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
   document.addEventListener('mousedown', event => {
-    const { x, y } = mouseEventToBoardCoords(event)
+    if (event.buttons === 1) {
+      const {x, y} = mouseEventToBoardCoords(event)
 
-    if (!game.isInBounds(x, y))
-      return
+      if (!game.isInBounds(x, y))
+        return
 
-    game.toggleValue(x, y)
-    pencil = game.getValue(x, y)
+      game.toggleValue(x, y)
+      pencil = game.getValue(x, y)
+    }
   })
 
   document.addEventListener('mousemove', event => {
