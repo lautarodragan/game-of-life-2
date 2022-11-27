@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const gameInterval = new Interval(() => {
     game.nextStep()
-  })
+  }, 200)
 
   const renderer = Renderer(game, gl)
 
@@ -80,9 +80,19 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
   document.addEventListener('keydown', event => {
-    console.log('keydown', event.code)
-    if (event.code === 'Space')
+    // console.log('keydown', event.code)
+    if (event.code === 'Space') {
+      event.preventDefault()
       gameInterval.toggle()
+    } else if (event.code === 'ArrowRight') {
+      event.preventDefault()
+      gameInterval.intervalTime -= 20
+      console.log('speed', gameInterval.intervalTime)
+    } else if (event.code === 'ArrowLeft') {
+      event.preventDefault()
+      gameInterval.intervalTime += 20
+      console.log('speed', gameInterval.intervalTime)
+    }
   })
 
   document.addEventListener('wheel', event => {

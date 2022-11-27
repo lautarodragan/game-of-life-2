@@ -19,7 +19,8 @@ export const Renderer = (game, gl) => {
   }
 
   function render(camera) {
-    gl.clearColor(.5, .5, .5, 1)
+    // gl.clearColor(.5, .5, .5, 1)
+    gl.clearColor(0, 0, 0, .01)
     gl.clear(gl.COLOR_BUFFER_BIT)
 
     for (let x = 0; x < game.width; x++)
