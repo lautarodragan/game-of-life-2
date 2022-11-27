@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
     w: 1,
     h: 1,
   }
-  window.camera = camera
 
   const onGamePerformance = (averageMeasure) => {
     // document.title = `Avg: ${Math.round(averageMeasure)}`
