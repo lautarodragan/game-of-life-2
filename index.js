@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     x: 0,
     y: 0,
     z: 40,
+    w: 1,
+    h: 1,
   }
 
   const onPerformance = (averageMeasure) => {
@@ -33,11 +35,13 @@ document.addEventListener('DOMContentLoaded', () => {
     canvas.width = width
     canvas.height = height
     renderer.setViewPortSize(width, height)
+    camera.w = width
+    camera.h = height
   }
 
   const mouseEventToBoardCoords = (event) => ({
-    x: Math.floor((event.x - camera.x) / camera.z),
-    y: Math.floor((canvas.height - event.y - camera.y) / camera.z),
+    x: Math.floor((event.x - camera.x - camera.w / 2) / camera.z),
+    y: Math.floor((canvas.height - event.y - camera.y - camera.h / 2) / camera.z),
   })
 
   requestAnimationFrame(function animationFrame() {
@@ -110,8 +114,13 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('wheel', event => {
     const newZoom = camera.z - Math.sign(event.deltaY)
 
-    if (newZoom > 1)
+    if (newZoom >= 1) {
+      const zoomOriginX = event.x
+      const zoomOriginY = event.y
+      camera.x += zoomOriginX - Math.sign(event.deltaY) * canvas.width / 2
+      camera.y += zoomOriginY - Math.sign(event.deltaY) * canvas.height / 2
       camera.z = newZoom
+    }
   })
 
 })

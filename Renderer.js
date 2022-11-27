@@ -53,8 +53,8 @@ export const Renderer = (game, gl) => {
       for (let y = 0; y < game.height; y++)
         if (game.getValue(x, y))
           drawRect(
-            x * camera.z + camera.x,
-            y * camera.z + camera.y,
+            x * camera.z + camera.x + camera.w / 2,
+            y * camera.z + camera.y + camera.h / 2,
             camera.z,
             camera.z,
             randomRGBWithDecay(x, y),
