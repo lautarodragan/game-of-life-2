@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementsByTagName('canvas')[0]
   const gl = canvas.getContext('webgl2',  { alpha: false })
 
-  const game = new GameOfLife(600, 600)
+  const game = GameOfLife(600, 600)
   let pencil = 1
   const camera = {
     x: 0,
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const gameInterval = new Interval(
-    withPerformance(game.nextStep.bind(game), 10, onPerformance),
+    withPerformance(game.nextStep, 10, onPerformance),
     200,
   )
 
