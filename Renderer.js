@@ -31,6 +31,11 @@ export const Renderer = (game, gl) => {
     (x+w), y,
   ])
 
+  const randomColorWithDecay = (x, y) => Math.random() * game.getValue(x, y) / 0xff
+
+  const randomRGBWithDecay = (x, y) =>
+    [randomColorWithDecay(x, y), randomColorWithDecay(x, y), randomColorWithDecay(x, y), 1]
+
   function drawRect(x, y, w, h, color) {
     gl.uniform4f(uColor, ...color)
 
@@ -52,7 +57,7 @@ export const Renderer = (game, gl) => {
             y * camera.z + camera.y,
             camera.z,
             camera.z,
-            [Math.random() * game.getValue(x, y) / 0xff, Math.random() * game.getValue(x, y) / 0xff, Math.random() * game.getValue(x, y) / 0xff, 1],
+            randomRGBWithDecay(x, y),
           )
   }
 
