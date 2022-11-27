@@ -29,7 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
     else
       performanceAverage = measure
 
-    document.title = `Avg: ${Math.round(performanceAverage)}`
+    if (performanceSampleCount % 10 === 0)
+      document.title = `Avg: ${Math.round(performanceAverage)}`
     // console.log(`This run: ${Math.round(measure)}`, `Avg: ${Math.round(performanceAverage)}`)
   }, 200)
 
