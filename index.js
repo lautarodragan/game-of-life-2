@@ -45,6 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshViewPortSize()
   })
 
+  refreshViewPortSize()
+
   document.addEventListener('mousedown', event => {
     if (event.buttons === 1) {
       const {x, y} = mouseEventToBoardCoords(event)
@@ -89,8 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (newZoom > 10)
       camera.z = newZoom
   })
-
-  refreshViewPortSize()
 
 })
 
