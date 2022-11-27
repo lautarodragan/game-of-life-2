@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementsByTagName('canvas')[0]
   const gl = canvas.getContext('webgl2',  { alpha: false })
 
-  const game = new GameOfLife(20, 20)
+  const game = new GameOfLife(600, 600)
   let pencil = 1
   const camera = {
     x: 0,
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('wheel', event => {
     const newZoom = camera.z - Math.sign(event.deltaY)
 
-    if (newZoom > 10)
+    if (newZoom > 1)
       camera.z = newZoom
   })
 
