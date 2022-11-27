@@ -1,6 +1,7 @@
 import { GameOfLife } from './GameOfLife.js'
 import { Interval } from './Interval.js'
 import { Renderer } from './Renderer.js'
+import { withPerformance } from './withPerformance.js'
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementsByTagName('canvas')[0]
@@ -14,25 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
     z: 40,
   }
 
-  let performanceSampleCount = 0
-  let performanceAverage = 0
-  const gameInterval = new Interval(() => {
-    const start = performance.now()
-
+  const gameInterval = new Interval(withPerformance(() => {
     game.nextStep()
-
-    performanceSampleCount++
-    const measure = performance.now() - start
-
-    if (performanceSampleCount > 1)
-      performanceAverage = performanceAverage * (performanceSampleCount - 1) / performanceSampleCount + measure / performanceSampleCount
-    else
-      performanceAverage = measure
-
-    if (performanceSampleCount % 10 === 0)
-      document.title = `Avg: ${Math.round(performanceAverage)}`
-    // console.log(`This run: ${Math.round(measure)}`, `Avg: ${Math.round(performanceAverage)}`)
-  }, 200)
+  }), 200)
 
   const renderer = Renderer(game, gl)
 
