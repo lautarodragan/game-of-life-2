@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementsByTagName('canvas')[0]
   const gl = canvas.getContext('webgl2',  { alpha: false })
 
-  const game = GameOfLife(200, 200)
+  const game = GameOfLife(50, 50)
   let pencil = 1
   const camera = {
     x: 0,
@@ -43,8 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const mouseEventToBoardCoords = (event) => ({
-    x: Math.floor((event.x + camera.x - camera.w / 2) / camera.z),
-    y: Math.floor((canvas.height - event.y + camera.y - camera.h / 2) / camera.z),
+    x: Math.floor((event.x + camera.x - camera.w / 2) / camera.z + game.width / 2),
+    y: Math.floor((canvas.height - event.y + camera.y - camera.h / 2) / camera.z + game.height / 2),
   })
 
   requestAnimationFrame(function animationFrame() {
