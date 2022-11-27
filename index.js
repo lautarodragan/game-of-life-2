@@ -15,9 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
     z: 40,
   }
 
-  const gameInterval = new Interval(withPerformance(() => {
-    game.nextStep()
-  }), 200)
+  const onPerformance = (averageMeasure) => {
+    document.title = `Avg: ${Math.round(averageMeasure)}`
+  }
+
+  const gameInterval = new Interval(
+    withPerformance(game.nextStep.bind(game), 10, onPerformance),
+    200,
+  )
 
   const renderer = Renderer(game, gl)
 

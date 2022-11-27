@@ -1,4 +1,4 @@
-export const withPerformance = (fn) => {
+export const withPerformance = (fn, updateFrequency, updateCallback) => {
   let performanceSampleCount = 0
   let performanceAverage = 0
 
@@ -15,8 +15,7 @@ export const withPerformance = (fn) => {
     else
       performanceAverage = measure
 
-    if (performanceSampleCount % 10 === 0)
-      document.title = `Avg: ${Math.round(performanceAverage)}`
-    // console.log(`This run: ${Math.round(measure)}`, `Avg: ${Math.round(performanceAverage)}`)
+    if (performanceSampleCount % updateFrequency === 0)
+      updateCallback(performanceAverage)
   }
 }
