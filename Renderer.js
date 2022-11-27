@@ -48,13 +48,13 @@ export const Renderer = (game, gl) => {
     for (let x = 0; x < game.width; x++)
       for (let y = 0; y < game.height; y++)
         if (game.getValue(x, y))
-        drawRect(
-          x * camera.z + camera.x,
-          y * camera.z + camera.y,
-          camera.z,
-          camera.z,
-          game.getValue(x, y) ? [Math.random(), Math.random(), Math.random(), 1] : [0, 0, 0, 0],
-        )
+          drawRect(
+            x * camera.z + camera.x,
+            y * camera.z + camera.y,
+            camera.z,
+            camera.z,
+            [Math.random(), Math.random(), Math.random(), 1],
+          )
   }
 
   function setViewPortSize(width, height) {
