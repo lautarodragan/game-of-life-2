@@ -46,6 +46,11 @@ export const GameOfLife = (width, height) => {
       return liveNeighbours === 3 ? 0xff : Math.max(state - _decay, 0);
   }
 
+  const clear = () => {
+    matrix1.clear()
+    matrix2.clear()
+  }
+
   return {
     get width() { return width },
     get height() { return height },
@@ -56,6 +61,7 @@ export const GameOfLife = (width, height) => {
     setValue(x, y, v) { return matrix.setValue(x, y, v) },
     toggleValue,
     nextStep,
+    clear,
   }
 
 }

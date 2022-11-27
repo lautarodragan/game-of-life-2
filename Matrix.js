@@ -25,4 +25,8 @@ export class Matrix {
     return x >= 0 && y >= 0 && x < this.width && y < this.height;
   }
 
+  clear() {
+    this.cells.fill(0)
+  }
+
 }

@@ -112,6 +112,9 @@ document.addEventListener('DOMContentLoaded', () => {
       event.preventDefault()
       game.decay -= 8
       console.log('decay', game.decay)
+    } else if (event.code === 'KeyR' && !event.ctrlKey) {
+      event.preventDefault()
+      game.clear()
     }
   })
 
