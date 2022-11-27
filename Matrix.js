@@ -2,11 +2,6 @@ export class Matrix {
   constructor(width, height) {
     this.width = width;
     this.height = height;
-    this.cells = [];
-    this.initialize();
-  }
-
-  initialize() {
     this.cells = new Uint8Array(this.width * this.height);
   }
 
