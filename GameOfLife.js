@@ -21,6 +21,10 @@ export class GameOfLife {
     this.matrix.setValue(x, y, value)
   }
 
+  toggleValue(x, y) {
+    this.matrix.setValue(x, y, !this.matrix.getValue(x, y))
+  }
+
   nextStep() {
     const newState = new Matrix(this.matrix.width, this.matrix.height);
 

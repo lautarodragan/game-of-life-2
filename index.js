@@ -55,6 +55,14 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshViewPortSize()
   })
 
+  document.addEventListener('mousedown', event => {
+    const x = Math.floor(event.x / canvas.width * zoom * game.width)
+    const y = Math.floor((canvas.height - event.y) / canvas.height * zoom * game.height)
+    console.log(x, y)
+
+    game.toggleValue(x, y)
+  })
+
   refreshViewPortSize()
 
 })
