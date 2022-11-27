@@ -1,21 +1,23 @@
 import { createProgram } from './createProgram.js'
 import { GameOfLife } from './GameOfLife.js'
+import { Interval } from './Interval.js'
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementsByTagName('canvas')[0]
-  window.canvas = canvas
   const gl = canvas.getContext('webgl2',  { alpha: false })
 
   const program = createProgram(gl)
   const game = new GameOfLife(20, 20)
   let zoom = 40
-  let paused = true
-  let pencil = 0
+  let pencil = 1
+
+  const gameInterval = new Interval(() => {
+    game.nextStep()
+  })
 
   gl.clearDepth(1)
   gl.disable(gl.DEPTH_TEST)
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-
 
   function renderCircle(x, y, w, h) {
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
@@ -64,31 +66,32 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
   document.addEventListener('mousedown', event => {
-    console.log('mousedown')
     const x = Math.floor(event.x / zoom)
     const y = Math.floor((canvas.height - event.y) / zoom)
+
+    if (!game.isInBounds(x, y))
+      return
+
     game.toggleValue(x, y)
     pencil = game.getValue(x, y)
   })
 
   document.addEventListener('mousemove', event => {
     if (event.buttons) {
-      console.log('mousemove', event.key)
       const x = Math.floor(event.x / zoom)
       const y = Math.floor((canvas.height - event.y) / zoom)
+
+      if (!game.isInBounds(x, y))
+        return
+
       game.setValue(x, y, pencil)
     }
   })
 
-  setInterval(() => {
-    if (!paused)
-      game.nextStep()
-  }, 200)
-
   document.addEventListener('keydown', event => {
     console.log('keydown', event.code)
     if (event.code === 'Space')
-      paused = !paused
+      gameInterval.toggle()
   })
 
   document.addEventListener('wheel', event => {

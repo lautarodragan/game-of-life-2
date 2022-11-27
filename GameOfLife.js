@@ -13,6 +13,10 @@ export class GameOfLife {
     return this.matrix.height;
   }
 
+  isInBounds(x, y) {
+    return this.matrix.isInBounds(x, y)
+  }
+
   getValue(x, y) {
     return this.matrix.getValue(x, y)
   }
