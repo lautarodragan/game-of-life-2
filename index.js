@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementsByTagName('canvas')[0]
   const gl = canvas.getContext('webgl2',  { alpha: false })
 
-  const game = GameOfLife(600, 600)
+  const game = GameOfLife(200, 200)
   let pencil = 1
   const camera = {
     x: 0,
@@ -16,9 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
     w: 1,
     h: 1,
   }
+  window.camera = camera
 
   const onPerformance = (averageMeasure) => {
-    document.title = `Avg: ${Math.round(averageMeasure)}`
+    // document.title = `Avg: ${Math.round(averageMeasure)}`
   }
 
   const gameInterval = new Interval(
@@ -37,11 +38,13 @@ document.addEventListener('DOMContentLoaded', () => {
     renderer.setViewPortSize(width, height)
     camera.w = width
     camera.h = height
+    // camera.x = game.width / 2 * camera.z
+    // camera.y = game.height / 2 * camera.z
   }
 
   const mouseEventToBoardCoords = (event) => ({
-    x: Math.floor((event.x - camera.x - camera.w / 2) / camera.z),
-    y: Math.floor((canvas.height - event.y - camera.y - camera.h / 2) / camera.z),
+    x: Math.floor((event.x + camera.x - camera.w / 2) / camera.z),
+    y: Math.floor((canvas.height - event.y + camera.y - camera.h / 2) / camera.z),
   })
 
   requestAnimationFrame(function animationFrame() {
@@ -78,8 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (event.buttons === 2) {
       event.preventDefault()
-      camera.x += event.movementX
-      camera.y -= event.movementY
+      camera.x -= event.movementX
+      camera.y += event.movementY
+      debugCamera()
     }
   })
 
@@ -112,16 +116,25 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
   document.addEventListener('wheel', event => {
-    const newZoom = camera.z - Math.sign(event.deltaY)
+    const sign = Math.sign(event.deltaY)
+    const newZoom = camera.z - sign
 
     if (newZoom >= 1) {
-      const zoomOriginX = event.x
-      const zoomOriginY = event.y
-      camera.x += zoomOriginX - Math.sign(event.deltaY) * canvas.width / 2
-      camera.y += zoomOriginY - Math.sign(event.deltaY) * canvas.height / 2
+      // const zoomOriginX = event.x
+      // const zoomOriginY = event.y
+      // camera.x += zoomOriginX - Math.sign(event.deltaY) * canvas.width / 2
+      // camera.y += zoomOriginY - Math.sign(event.deltaY) * canvas.height / 2
+      // camera.x += Math.sign(event.deltaY) * 200
+      // camera.x -= (canvas.width / 2 - event.x) / 2 * sign / camera.z
+      // camera.y -= (canvas.height / 2 - event.y) / 2 * sign / camera.z
+      debugCamera()
       camera.z = newZoom
     }
   })
+
+  const debugCamera = () => {
+    document.title = `${Math.round(camera.x)}x, ${Math.round(camera.y)}y, ${Math.round(camera.z)}z, ${Math.round(camera.w)}w, ${Math.round(camera.h)}h`
+  }
 
 })
 
