@@ -1,4 +1,3 @@
-import { createProgram } from './createProgram.js'
 import { GameOfLife } from './GameOfLife.js'
 import { Interval } from './Interval.js'
 import { Renderer } from './Renderer.js'
@@ -7,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementsByTagName('canvas')[0]
   const gl = canvas.getContext('webgl2',  { alpha: false })
 
-  const program = createProgram(gl)
   const game = new GameOfLife(20, 20)
   let pencil = 1
   const camera = {
