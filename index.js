@@ -26,7 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const gameInterval = new Interval(
-    withPerformance(game.nextStep, 10, onGamePerformance),
+    // withPerformance(game.nextStep, 10, onGamePerformance),
+    game.nextStep,
     200,
   )
 
@@ -52,8 +53,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const renderWithPerformance = withPerformance(renderer.render, 10, onRenderPerformance)
 
+  let lastFrameStartTime = performance.now()
+
   requestAnimationFrame(function animationFrame() {
-    renderWithPerformance(camera)
+    // renderWithPerformance(camera)
+    renderer.render(camera)
+    const timelapse = performance.now() - lastFrameStartTime
+    lastFrameStartTime = performance.now()
+    document.title = `Frame Time: ${Math.round(timelapse)}`
     window.requestAnimationFrame(animationFrame)
   })
 
