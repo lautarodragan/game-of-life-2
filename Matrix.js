@@ -7,20 +7,15 @@ export class Matrix {
   }
 
   initialize() {
-    for (let x = 0; x < this.width; x++) {
-      this.cells[x] = [];
-      // this.cells[x].length = this.height;
-      for (let y = 0; y < this.height; y++) {
-        this.cells[x][y] = 0;
-      }
-    }
+    this.cells = new Uint8Array(this.width * this.height);
   }
 
   getValue(x, y) {
     if (!this.isInBounds(x, y)) {
       throw new Error(`Not in bounds: ${x}, ${y}`)
     }
-    return this.cells[x][y];
+
+    return this.cells[x + y * this.width]
   }
 
   setValue(x, y, value) {
@@ -28,7 +23,7 @@ export class Matrix {
       throw new Error(`Not in bounds: ${x}, ${y}`)
     }
 
-    this.cells[x][y] = value;
+    this.cells[x + y * this.width] = value;
   }
 
   isInBounds(x, y) {
