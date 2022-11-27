@@ -38,7 +38,7 @@ export class GameOfLife {
     for (let x = 0; x < newMatrix.width; x++) {
       for (let y = 0; y < newMatrix.height; y++) {
         const liveNeighbours = this.getLiveNeighbourCount(x, y);
-        const newValue = this.getCellState(oldMatrix.getValue(x, y), liveNeighbours);
+        const newValue = getCellState(oldMatrix.getValue(x, y), liveNeighbours);
 
         newMatrix.setValue(x, y, newValue);
       }
@@ -60,11 +60,11 @@ export class GameOfLife {
     return count;
   }
 
-  getCellState(state, liveNeighbours) {
-    if (state === 1)
-      return liveNeighbours < 2 || liveNeighbours > 3 ? 0 : 1;
-    else
-      return liveNeighbours === 3 ? 1 : 0;
-  }
+}
 
+const getCellState = (state, liveNeighbours) => {
+  if (state === 1)
+    return liveNeighbours < 2 || liveNeighbours > 3 ? 0 : 1;
+  else
+    return liveNeighbours === 3 ? 1 : 0;
 }
