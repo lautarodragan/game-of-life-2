@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementsByTagName('canvas')[0]
   const gl = canvas.getContext('webgl2',  { alpha: false })
 
-  const game = GameOfLife(100, 100)
+  const game = GameOfLife(300, 300)
   let pencil = 1
   const camera = {
     x: 0,
@@ -53,15 +53,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const renderWithPerformance = withPerformance(renderer.render, 10, onRenderPerformance)
 
+  let frameCount = 0
   let lastFrameStartTime = performance.now()
+  const fpsMeasurements = new Float32Array(5)
+
+  const calculateAverageFPS = () => {
+    let fps = 0
+
+    for (let i = 0; i < fpsMeasurements.length; i++)
+      fps += fpsMeasurements[i] / fpsMeasurements.length
+
+    return fps
+  }
 
   requestAnimationFrame(function animationFrame() {
     // renderWithPerformance(camera)
     renderer.render(camera)
     const timelapse = performance.now() - lastFrameStartTime
     lastFrameStartTime = performance.now()
+
+    fpsMeasurements[frameCount % fpsMeasurements.length] = 1 / timelapse * 1000
+    const averageFPS = calculateAverageFPS()
+    document.title = `FPS: ${Math.round(averageFPS)}`
+    // document.title = `FPS: ${1 / timelapse * 1000}`
     // document.title = `Frame Time: ${Math.round(timelapse)}`
-    document.title = `FPS: ${1 / timelapse * 1000}`
+
+    frameCount++
     window.requestAnimationFrame(animationFrame)
   })
 
