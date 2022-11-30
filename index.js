@@ -60,7 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
     renderer.render(camera)
     const timelapse = performance.now() - lastFrameStartTime
     lastFrameStartTime = performance.now()
-    document.title = `Frame Time: ${Math.round(timelapse)}`
+    // document.title = `Frame Time: ${Math.round(timelapse)}`
+    document.title = `FPS: ${1 / timelapse * 1000}`
     window.requestAnimationFrame(animationFrame)
   })
 
