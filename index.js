@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let frameCount = 0
   let lastFrameStartTime = performance.now()
-  const fpsMeasurements = new Float32Array(5)
+  const fpsMeasurements = new Float32Array(60)
 
   const calculateAverageFPS = () => {
     let fps = 0
