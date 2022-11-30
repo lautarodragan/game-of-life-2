@@ -34,7 +34,7 @@ export const Renderer = (game, gl) => {
     x,     (y+h),
     (x+w), (y+h),
     x,     y,
-    x,     (y+h),
+    (x+w), y,
     x,     y,
     (x+w), (y+h),
   ])
@@ -60,7 +60,7 @@ export const Renderer = (game, gl) => {
         const g = Math.random() * life / 0xff
         const b = Math.random() * life / 0xff
 
-        for (let j = 0; j < 6; j++) { // repeated so each point of the triangle strip has the same color
+        for (let j = 0; j < 6; j++) { // repeated so each point of the 2 triangles has the same color
           colors.push(r)
           colors.push(g)
           colors.push(b)
