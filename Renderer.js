@@ -17,12 +17,18 @@ export const Renderer = (game, gl) => {
   const uColor = gl.getUniformLocation(program, 'uColor')
   const uResolution = gl.getUniformLocation(program, 'uResolution')
 
-  const aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition')
-  gl.enableVertexAttribArray(aVertexPosition)
-
   const positionBuffer = gl.createBuffer()
+  const colorBuffer = gl.createBuffer()
+
+  const positionAttribute = gl.getAttribLocation(program, 'aVertexPosition')
+  gl.enableVertexAttribArray(positionAttribute)
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-  gl.vertexAttribPointer(aVertexPosition, 2, gl.FLOAT, false, 0, 0)
+  gl.vertexAttribPointer(positionAttribute, 2, gl.FLOAT, false, 0, 0)
+
+  const colorAttribute = gl.getAttribLocation(program, 'vColor');
+  gl.enableVertexAttribArray(colorAttribute);
+  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+  gl.vertexAttribPointer(colorAttribute, 3, gl.FLOAT, false, 0, 0);
 
   const positionsScreen = (x, y, w, h) => new Float32Array([
     x,     (y+h),
@@ -33,32 +39,47 @@ export const Renderer = (game, gl) => {
 
   const randomColorWithDecay = (x, y) => Math.random() * game.getValue(x, y) / 0xff
 
-  const randomRGBWithDecay = (x, y) =>
-    [randomColorWithDecay(x, y), randomColorWithDecay(x, y), randomColorWithDecay(x, y), 1]
-
-  function drawRect(x, y, w, h, color) {
-    gl.uniform4f(uColor, ...color)
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-    gl.bufferData(gl.ARRAY_BUFFER, positionsScreen(x, y, w, h), gl.STATIC_DRAW)
-
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
-  }
-
   function render(camera) {
     gl.clearColor(0, 0, 0, 1)
     gl.clear(gl.COLOR_BUFFER_BIT)
 
+    const positions = []
+    const colors = []
+
     for (let x = 0; x < game.width; x++)
-      for (let y = 0; y < game.height; y++)
-        if (game.getValue(x, y))
-          drawRect(
-            x * camera.z - camera.x + camera.w / 2 - game.width / 2 * camera.z,
-            y * camera.z - camera.y + camera.h / 2 - game.height / 2 * camera.z,
-            camera.z,
-            camera.z,
-            randomRGBWithDecay(x, y),
-          )
+      for (let y = 0; y < game.height; y++) {
+        const life = game.getValue(x, y)
+
+        if (!life)
+          continue
+
+        for (let i = 0; i < 2; i++)
+          colors.push(Math.random() * life / 0xff)
+
+        const vertices = positionsScreen(
+          x * camera.z - camera.x + camera.w / 2 - game.width / 2 * camera.z,
+          y * camera.z - camera.y + camera.h / 2 - game.height / 2 * camera.z,
+          camera.z,
+          camera.z,
+        )
+        // positions.push(...vertices)
+
+        for (let i = 0; i < vertices.length / 2; i++) {
+          positions.push(vertices[2 * i]); // x
+          positions.push(vertices[2 * i + 1]); // y
+        }
+
+      }
+
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW)
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW)
+
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, positions.length / 2)
+    // gl.drawArrays(gl.TRIANGLES, 0, positions.length / 2)
   }
 
   function setViewPortSize(width, height) {
