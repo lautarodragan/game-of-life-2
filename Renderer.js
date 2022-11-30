@@ -52,8 +52,8 @@ export const Renderer = (game, gl) => {
     const liveCellCount = game.getLiveCount()
     let liveCellIndex = 0
 
-    const colors = new Float32Array(liveCellCount * 3 * 6)
-    const positions = []
+    const colors = new Float32Array(liveCellCount * 6 * 3) // 6 points, 3 color components each (rgb)
+    const positions = new Float32Array(liveCellCount * 6 * 2) // 6 points, 2 coordinate components each (x, y)
 
     for (let x = 0; x < game.width; x++) {
       for (let y = 0; y < game.height; y++) {
@@ -66,7 +66,7 @@ export const Renderer = (game, gl) => {
 
         for (let i = 0; i < 6; i++) { // for each point in the square
           for (let j = 0; j < 3; j++) { // for each color component
-            colors[liveCellIndex * 3 * 6 + i * 3 + j] = rgb[j]
+            colors[liveCellIndex * 6 * 3 + i * 3 + j] = rgb[j]
           }
         }
 
@@ -76,7 +76,12 @@ export const Renderer = (game, gl) => {
           camera.z,
           camera.z,
         )
-        positions.push(...vertices)
+
+        for (let i = 0; i < 6; i++) { // for each point in the square
+          for (let j = 0; j < 2; j++) { // for each color component
+            positions[liveCellIndex * 6 * 2 + i * 2 + j] = vertices[i * 2 + j]
+          }
+        }
 
         liveCellIndex++
       }
@@ -86,7 +91,7 @@ export const Renderer = (game, gl) => {
     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW)
 
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW)
+    gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW)
 
     gl.drawArrays(gl.TRIANGLES, 0, positions.length)
   }
