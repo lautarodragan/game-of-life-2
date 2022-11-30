@@ -34,7 +34,9 @@ export const Renderer = (game, gl) => {
     x,     (y+h),
     (x+w), (y+h),
     x,     y,
-    (x+w), y,
+    x,     (y+h),
+    x,     y,
+    (x+w), (y+h),
   ])
 
   const randomColorWithDecay = (x, y) => Math.random() * game.getValue(x, y) / 0xff
@@ -50,11 +52,19 @@ export const Renderer = (game, gl) => {
       for (let y = 0; y < game.height; y++) {
         const life = game.getValue(x, y)
 
-        if (!life)
+        // if (!life)
+        if (life !== 0xff)
           continue
 
-        for (let i = 0; i < 2; i++)
-          colors.push(Math.random() * life / 0xff)
+        const r = Math.random() * life / 0xff
+        const g = Math.random() * life / 0xff
+        const b = Math.random() * life / 0xff
+
+        for (let j = 0; j < 6; j++) { // repeated so each point of the triangle strip has the same color
+          colors.push(r)
+          colors.push(g)
+          colors.push(b)
+        }
 
         const vertices = positionsScreen(
           x * camera.z - camera.x + camera.w / 2 - game.width / 2 * camera.z,
@@ -62,12 +72,7 @@ export const Renderer = (game, gl) => {
           camera.z,
           camera.z,
         )
-        // positions.push(...vertices)
-
-        for (let i = 0; i < vertices.length / 2; i++) {
-          positions.push(vertices[2 * i]); // x
-          positions.push(vertices[2 * i + 1]); // y
-        }
+        positions.push(...vertices)
 
       }
 
@@ -78,8 +83,7 @@ export const Renderer = (game, gl) => {
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW)
 
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, positions.length / 2)
-    // gl.drawArrays(gl.TRIANGLES, 0, positions.length / 2)
+    gl.drawArrays(gl.TRIANGLES, 0, positions.length)
   }
 
   function setViewPortSize(width, height) {
