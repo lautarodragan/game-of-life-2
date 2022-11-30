@@ -39,30 +39,35 @@ export const Renderer = (game, gl) => {
     (x+w), (y+h),
   ])
 
-  const randomColorWithDecay = (x, y) => Math.random() * game.getValue(x, y) / 0xff
+  const randomColorWithDecay = (life) => new Float32Array([
+    Math.random() * life / 0xff,
+    Math.random() * life / 0xff,
+    Math.random() * life / 0xff,
+  ])
 
   function render(camera) {
     gl.clearColor(0, 0, 0, 1)
     gl.clear(gl.COLOR_BUFFER_BIT)
 
-    const positions = []
-    const colors = []
+    const liveCellCount = game.getLiveCount()
+    let liveCellIndex = 0
 
-    for (let x = 0; x < game.width; x++)
+    const colors = new Float32Array(liveCellCount * 3 * 6)
+    const positions = []
+
+    for (let x = 0; x < game.width; x++) {
       for (let y = 0; y < game.height; y++) {
         const life = game.getValue(x, y)
 
         if (!life)
           continue
 
-        const r = Math.random() * life / 0xff
-        const g = Math.random() * life / 0xff
-        const b = Math.random() * life / 0xff
+        const rgb = randomColorWithDecay(life)
 
-        for (let j = 0; j < 6; j++) { // repeated so each point of the 2 triangles has the same color
-          colors.push(r)
-          colors.push(g)
-          colors.push(b)
+        for (let i = 0; i < 6; i++) { // for each point in the square
+          for (let j = 0; j < 3; j++) { // for each color component
+            colors[liveCellIndex * 3 * 6 + i * 3 + j] = rgb[j]
+          }
         }
 
         const vertices = positionsScreen(
@@ -73,11 +78,12 @@ export const Renderer = (game, gl) => {
         )
         positions.push(...vertices)
 
+        liveCellIndex++
       }
-
+    }
 
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW)
+    gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW)
 
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW)

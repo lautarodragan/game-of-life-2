@@ -57,6 +57,16 @@ export const GameOfLife = (width, height) => {
     }
   }
 
+  const getLiveCount = () => {
+    let count = 0
+
+    for (let i = 0; i < matrix.cells.length; i++)
+      if (matrix.cells[i])
+        count++
+
+    return count
+  }
+
   return {
     get width() { return width },
     get height() { return height },
@@ -69,6 +79,7 @@ export const GameOfLife = (width, height) => {
     nextStep,
     clear,
     random,
+    getLiveCount,
   }
 
 }
