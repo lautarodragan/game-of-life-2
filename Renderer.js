@@ -52,8 +52,7 @@ export const Renderer = (game, gl) => {
       for (let y = 0; y < game.height; y++) {
         const life = game.getValue(x, y)
 
-        // if (!life)
-        if (life !== 0xff)
+        if (!life)
           continue
 
         const r = Math.random() * life / 0xff
