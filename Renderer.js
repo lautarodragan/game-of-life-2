@@ -8,6 +8,7 @@ export const Renderer = (game, gl) => {
     height: 0,
   }
 
+  gl.clearColor(0, 0, 0, 1)
   gl.clearDepth(1)
   gl.disable(gl.DEPTH_TEST)
   gl.enable(gl.BLEND)
@@ -46,7 +47,6 @@ export const Renderer = (game, gl) => {
   ])
 
   function render(camera) {
-    gl.clearColor(0, 0, 0, 1)
     gl.clear(gl.COLOR_BUFFER_BIT)
 
     const liveCellCount = game.getLiveCount()
