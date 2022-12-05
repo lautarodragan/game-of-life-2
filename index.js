@@ -5,7 +5,11 @@ import { withPerformance } from './withPerformance.js'
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementsByTagName('canvas')[0]
-  const gl = canvas.getContext('webgl2',  { alpha: false })
+  const gl = canvas.getContext('webgl2',  {
+    alpha: false,
+    preserveDrawingBuffer : false,
+    antialias: false,
+  })
 
   const game = GameOfLife(300, 300)
   let pencil = 1
