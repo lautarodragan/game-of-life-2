@@ -93,7 +93,7 @@ export const Renderer = (game, gl) => {
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
     gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW)
 
-    gl.drawArrays(gl.TRIANGLES, 0, positions.length)
+    gl.drawArrays(gl.TRIANGLES, 0, positions.length / 2)
   }
 
   function setViewPortSize(width, height) {
