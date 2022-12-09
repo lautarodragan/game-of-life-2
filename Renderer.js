@@ -8,6 +8,7 @@ export const Renderer = (game, gl) => {
     height: 0,
   }
 
+  gl.clearColor(0, 0, 0, 1)
   gl.clearDepth(1)
   gl.disable(gl.DEPTH_TEST)
   gl.enable(gl.BLEND)
@@ -46,7 +47,6 @@ export const Renderer = (game, gl) => {
   ])
 
   function render(camera) {
-    gl.clearColor(0, 0, 0, 1)
     gl.clear(gl.COLOR_BUFFER_BIT)
 
     const liveCellCount = game.getLiveCount()
@@ -93,7 +93,7 @@ export const Renderer = (game, gl) => {
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
     gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW)
 
-    gl.drawArrays(gl.TRIANGLES, 0, positions.length)
+    gl.drawArrays(gl.TRIANGLES, 0, positions.length / 2)
   }
 
   function setViewPortSize(width, height) {
