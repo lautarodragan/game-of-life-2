@@ -136,11 +136,11 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('speed', gameInterval.intervalTime)
     } else if (event.code === 'ArrowUp') {
       event.preventDefault()
-      game.decay += 8
+      game.decay += 2
       console.log('decay', game.decay)
     } else if (event.code === 'ArrowDown') {
       event.preventDefault()
-      game.decay -= 8
+      game.decay -= 2
       console.log('decay', game.decay)
     } else if (event.code === 'KeyR' && !event.ctrlKey) {
       event.preventDefault()

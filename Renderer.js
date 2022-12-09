@@ -14,21 +14,31 @@ export const Renderer = (game, gl) => {
   // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
   gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
 
-  const uColor = gl.getUniformLocation(program, 'uColor')
+  const colors = new Float32Array(game.width * game.height * 6 * 3) // 6 points, 3 color components each (rgb)
+  const positions = new Float32Array(game.width * game.height * 6 * 2) // 6 points, 2 coordinate components each (x, y)
+
   const uResolution = gl.getUniformLocation(program, 'uResolution')
 
   const positionBuffer = gl.createBuffer()
   const colorBuffer = gl.createBuffer()
 
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
+  gl.bufferData(gl.ARRAY_BUFFER, colors.length, gl.DYNAMIC_DRAW)
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
+  gl.bufferData(gl.ARRAY_BUFFER, positions.length, gl.DYNAMIC_DRAW)
+
   const positionAttribute = gl.getAttribLocation(program, 'aVertexPosition')
   gl.enableVertexAttribArray(positionAttribute)
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-  gl.vertexAttribPointer(positionAttribute, 2, gl.FLOAT, false, 0, 0)
+  gl.vertexAttribPointer(positionAttribute, 2, gl.FLOAT, false, 3 * 4 * 4, 0)
+  gl.vertexAttribDivisor(positionAttribute, 1)
 
   const colorAttribute = gl.getAttribLocation(program, 'vColor');
   gl.enableVertexAttribArray(colorAttribute);
   gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-  gl.vertexAttribPointer(colorAttribute, 3, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribPointer(colorAttribute, 3, gl.FLOAT, false, 3 * 4, 0);
+  gl.vertexAttribDivisor(colorAttribute, 1)
 
   const positionsScreen = (x, y, w, h) => new Float32Array([
     x,     (y+h),
@@ -49,18 +59,14 @@ export const Renderer = (game, gl) => {
     gl.clearColor(0, 0, 0, 1)
     gl.clear(gl.COLOR_BUFFER_BIT)
 
-    const liveCellCount = game.getLiveCount()
-    let liveCellIndex = 0
-
-    const colors = new Float32Array(liveCellCount * 6 * 3) // 6 points, 3 color components each (rgb)
-    const positions = new Float32Array(liveCellCount * 6 * 2) // 6 points, 2 coordinate components each (x, y)
-
     for (let x = 0; x < game.width; x++) {
       for (let y = 0; y < game.height; y++) {
         const life = game.getValue(x, y)
 
-        if (!life)
-          continue
+        // if (!life)
+        //   continue
+
+        const liveCellIndex = x + y * game.width
 
         const rgb = randomColorWithDecay(life)
 
@@ -83,17 +89,16 @@ export const Renderer = (game, gl) => {
           }
         }
 
-        liveCellIndex++
       }
     }
 
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW)
+    gl.bufferData(gl.ARRAY_BUFFER, colors, gl.DYNAMIC_DRAW)
 
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-    gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW)
+    gl.bufferData(gl.ARRAY_BUFFER, positions, gl.DYNAMIC_DRAW)
 
-    gl.drawArrays(gl.TRIANGLES, 0, positions.length)
+    gl.drawArraysInstanced(gl.TRIANGLES, 0, positions.length, 1)
   }
 
   function setViewPortSize(width, height) {
