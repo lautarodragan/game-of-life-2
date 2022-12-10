@@ -1,36 +1,23 @@
 import { fragmentShaderSource, vertexShaderSource } from '../shaders/game.js'
 
-function createVertexShader(gl) {
-  const vertexShader = gl.createShader(gl.VERTEX_SHADER)
-  gl.shaderSource(vertexShader, vertexShaderSource)
-  gl.compileShader(vertexShader)
+function createShader(gl, shaderType, source) {
+  const shader = gl.createShader(shaderType)
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
 
-  if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
-    console.log('Unable to compile VertexShader')
-    console.log(gl.getShaderInfoLog(vertexShader))
-    throw new Error('Unable to compile VertexShader')
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    console.error('Unable to compile shader')
+    console.error(gl.getShaderInfoLog(shader))
+    console.error(source)
+    throw new Error('Unable to compile Shader')
   }
 
-  return vertexShader
-}
-
-function createFragmentShader(gl) {
-  const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER)
-  gl.shaderSource(fragmentShader, fragmentShaderSource)
-  gl.compileShader(fragmentShader)
-
-  if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
-    console.log('Unable to compile FragmentShader')
-    console.log(gl.getShaderInfoLog(fragmentShader))
-    throw new Error('Unable to compile VertexShader')
-  }
-
-  return fragmentShader
+  return shader
 }
 
 export function createProgram(gl) {
-  const vertexShader = createVertexShader(gl)
-  const fragmentShader = createFragmentShader(gl)
+  const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource)
+  const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource)
 
   const program = gl.createProgram()
   gl.attachShader(program, vertexShader)
