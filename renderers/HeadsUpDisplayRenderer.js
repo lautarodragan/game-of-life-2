@@ -17,7 +17,17 @@ export const HeadsUpDisplayRenderer = (gl) => {
   const textZoom = 4
   const resolution = { width: 0, height: 0}
   let fps = 0
-
+  
+  function setFPS(_) {
+    fps = _
+  }
+  
+  function setResolution(width, height) {
+    resolution.width = width
+    resolution.height = height
+    program.setResolution(width, height)
+  }
+  
   function render() {
     if (!program.areTexturesLoaded())
       return
@@ -50,17 +60,7 @@ export const HeadsUpDisplayRenderer = (gl) => {
     program.setTextureCoords(textureCoords)
     program.render(positions.length / 2)
   }
-  
-  function setFPS(_) {
-    fps = _
-  }
-  
-  function setResolution(width, height) {
-    resolution.width = width
-    resolution.height = height
-    program.setResolution(width, height)
-  }
-  
+
   function alignText(text, alignment) {
     if (alignment === TextAlignment.BottomLeft)
       return [0, 0]
