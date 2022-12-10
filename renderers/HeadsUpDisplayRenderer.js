@@ -1,28 +1,32 @@
 import { HeadsUpDisplayProgram } from '../programs/HeadsUpDisplayProgram.js'
 
 export const HeadsUpDisplayRenderer = (gl) => {
+  const program = HeadsUpDisplayProgram(gl)
   let fps = 0
-  // const program = HeadsUpDisplayProgram(gl)
+  // let fontTexture = null
 
   function render() {
     document.title = `FPS: ${Math.round(fps)}`
     
-    return
-    
-    // const positions = new Float32Array(30)
-    
-    // program.setPositions(positions)
-    // program.render(positions.length / 2)
+    // if (!fontTexture)
+    //   return
+  
+    const positions = new Float32Array(30)
+  
+    program.use()
+    program.setPositions(positions)
+    program.render(positions.length / 2)
   }
   
   function setFPS(_) {
     fps = _
   }
-
+  
   return {
     render,
-    // setResolution: program.setResolution,
+    setResolution: program.setResolution,
     setFPS,
+    loadFontTexture: program.loadFontTexture,
   }
 }
 

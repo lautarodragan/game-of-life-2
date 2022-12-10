@@ -5,7 +5,7 @@ export const WorldProgram = (gl) => {
   const program = createProgram(gl, vertexShaderSource, fragmentShaderSource)
 
   const uResolution = gl.getUniformLocation(program, 'uResolution')
-
+  
   const positionBuffer = gl.createBuffer()
   const colorBuffer = gl.createBuffer()
 
@@ -22,9 +22,12 @@ export const WorldProgram = (gl) => {
   function render(count) {
     gl.drawArrays(gl.TRIANGLES, 0, count)
   }
-
+  
   function setResolution(width, height) {
+    const previousProgram = gl.getParameter(gl.CURRENT_PROGRAM)
+    gl.useProgram(program)
     gl.uniform2f(uResolution, width, height)
+    gl.useProgram(previousProgram)
   }
 
   function setPositions(positions) {
@@ -38,6 +41,7 @@ export const WorldProgram = (gl) => {
   }
 
   return {
+    use: () => { gl.useProgram(program) },
     render,
     setResolution,
     setPositions,

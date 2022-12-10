@@ -34,7 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
     camera.h = height
     // TODO: adjust camera.x, camera.y so zoom is centered on the pointer
   }
-
+  
+  function loadTextures() {
+    renderer.loadTextures('/images/bubblemad_8x8.png')
+  }
+  
   const mouseEventToBoardCoords = (event) => ({
     x: Math.floor((event.x + camera.x - camera.w / 2) / camera.z + game.width / 2),
     y: Math.floor((canvas.height - event.y + camera.y - camera.h / 2) / camera.z + game.height / 2),
@@ -74,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
   refreshViewPortSize()
-
+  
   document.addEventListener('mousedown', event => {
     if (event.buttons === 1) {
       const {x, y} = mouseEventToBoardCoords(event)
@@ -151,6 +155,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const debugCamera = () => {
     document.title = `${Math.round(camera.x)}x, ${Math.round(camera.y)}y, ${Math.round(camera.z)}z, ${Math.round(camera.w)}w, ${Math.round(camera.h)}h`
   }
-
+  
+  loadTextures()
+  
 })
 

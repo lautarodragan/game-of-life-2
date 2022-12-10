@@ -41,7 +41,8 @@ export const WorldRenderer = (gl, game, camera) => {
         liveCellIndex++
       }
     }
-
+  
+    program.use()
     program.setColors(colors)
     program.setPositions(positions)
     program.render(positions.length / 2)
