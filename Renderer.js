@@ -1,7 +1,7 @@
-import { createProgram } from './createProgram.js'
+import { WorldProgram } from './programs/WorldProgram.js'
 
 export const Renderer = (game, gl) => {
-  const program = createProgram(gl)
+  const program = WorldProgram(gl)
 
   const viewportSize = {
     width: 0,
@@ -14,22 +14,6 @@ export const Renderer = (game, gl) => {
   gl.enable(gl.BLEND)
   // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
   gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
-
-  const uColor = gl.getUniformLocation(program, 'uColor')
-  const uResolution = gl.getUniformLocation(program, 'uResolution')
-
-  const positionBuffer = gl.createBuffer()
-  const colorBuffer = gl.createBuffer()
-
-  const positionAttribute = gl.getAttribLocation(program, 'aVertexPosition')
-  gl.enableVertexAttribArray(positionAttribute)
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-  gl.vertexAttribPointer(positionAttribute, 2, gl.FLOAT, false, 0, 0)
-
-  const colorAttribute = gl.getAttribLocation(program, 'vColor');
-  gl.enableVertexAttribArray(colorAttribute);
-  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-  gl.vertexAttribPointer(colorAttribute, 3, gl.FLOAT, false, 0, 0);
 
   const positionsScreen = (x, y, w, h) => new Float32Array([
     x,     (y+h),
@@ -87,11 +71,8 @@ export const Renderer = (game, gl) => {
       }
     }
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW)
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-    gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW)
+    program.setColors(colors)
+    program.setPositions(positions)
 
     gl.drawArrays(gl.TRIANGLES, 0, positions.length / 2)
   }
@@ -100,7 +81,7 @@ export const Renderer = (game, gl) => {
     gl.viewport(0, 0, width, height)
     viewportSize.width = width
     viewportSize.height = height
-    gl.uniform2f(uResolution, width, height)
+    program.setResolution(width, height)
   }
 
   return {

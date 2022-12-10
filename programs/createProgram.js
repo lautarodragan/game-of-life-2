@@ -1,4 +1,4 @@
-import { fragmentShaderSource, vertexShaderSource } from './shaders/game.js'
+import { fragmentShaderSource, vertexShaderSource } from '../shaders/game.js'
 
 function createVertexShader(gl) {
   const vertexShader = gl.createShader(gl.VERTEX_SHADER)
