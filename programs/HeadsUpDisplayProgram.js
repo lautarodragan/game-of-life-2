@@ -14,14 +14,10 @@ export const HeadsUpDisplayProgram = (gl) => {
   gl.uniform1i(uSampler, 0)
 
   const position = gl.getAttribLocation(program, 'aVertexPosition')
-  // gl.enableVertexAttribArray(position)
-  // gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-  // gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0)
+  gl.enableVertexAttribArray(position)
   
   const textureCoord = gl.getAttribLocation(program, 'aTextureCoord')
-  // gl.enableVertexAttribArray(textureCoord)
-  // gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer)
-  // gl.vertexAttribPointer(textureCoord, 2, gl.FLOAT, false, 0, 0)
+  gl.enableVertexAttribArray(textureCoord)
   
   gl.bindTexture(gl.TEXTURE_2D, fontTexture)
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
@@ -31,12 +27,6 @@ export const HeadsUpDisplayProgram = (gl) => {
   
   function use() {
     gl.useProgram(program)
-    
-    const position = gl.getAttribLocation(program, 'aVertexPosition')
-    gl.enableVertexAttribArray(position)
-    
-    const textureCoord = gl.getAttribLocation(program, 'aTextureCoord')
-    gl.enableVertexAttribArray(textureCoord)
   }
   
   function render(count) {
