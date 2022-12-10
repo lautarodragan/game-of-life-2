@@ -10,9 +10,9 @@ export const HeadsUpDisplayProgram = (gl) => {
   const textureCoordBuffer = gl.createBuffer()
   const fontTexture = gl.createTexture()
 
-  const positionAttribute = gl.getAttribLocation(program, 'aVertexPosition')
-  console.log('HUD positionAttribute', positionAttribute)
-  gl.enableVertexAttribArray(positionAttribute)
+  const position = gl.getAttribLocation(program, 'aVertexPosition')
+  console.log('HUD positionAttribute', position)
+  gl.enableVertexAttribArray(position)
   // gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
   // gl.vertexAttribPointer(positionAttribute, 2, gl.FLOAT, false, 0, 0)
   
