@@ -1,3 +1,23 @@
+export function createProgram(gl, vertexShaderSource, fragmentShaderSource) {
+  const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource)
+  const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource)
+  
+  const program = gl.createProgram()
+  gl.attachShader(program, vertexShader)
+  gl.attachShader(program, fragmentShader)
+  gl.linkProgram(program)
+  
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    console.log('Unable to link program')
+    console.log(gl.getProgramInfoLog(program))
+    throw new Error('Unable to link program')
+  }
+  
+  gl.useProgram(program)
+  
+  return program
+}
+
 function createShader(gl, shaderType, source) {
   const shader = gl.createShader(shaderType)
   gl.shaderSource(shader, source)
@@ -13,22 +33,4 @@ function createShader(gl, shaderType, source) {
   return shader
 }
 
-export function createProgram(gl, vertexShaderSource, fragmentShaderSource) {
-  const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource)
-  const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource)
 
-  const program = gl.createProgram()
-  gl.attachShader(program, vertexShader)
-  gl.attachShader(program, fragmentShader)
-  gl.linkProgram(program)
-
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    console.log('Unable to link program')
-    console.log(gl.getProgramInfoLog(program))
-    throw new Error('Unable to link program')
-  }
-
-  gl.useProgram(program)
-
-  return program
-}
