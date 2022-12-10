@@ -38,7 +38,6 @@ export const WorldProgram = (gl) => {
   }
 
   return {
-    program,
     render,
     setResolution,
     setPositions,
