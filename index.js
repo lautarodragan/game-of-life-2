@@ -1,6 +1,6 @@
 import { GameOfLife } from './GameOfLife.js'
 import { Interval } from './Interval.js'
-import { Renderer } from './Renderer.js'
+import { Renderer } from './renderers/Renderer.js'
 import { withPerformance } from './withPerformance.js'
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -1,4 +1,4 @@
-import { WorldProgram } from './programs/WorldProgram.js'
+import { WorldProgram } from '../programs/WorldProgram.js'
 
 export const Renderer = (game, gl) => {
   const program = WorldProgram(gl)
