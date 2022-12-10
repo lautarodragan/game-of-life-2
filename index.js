@@ -59,8 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     lastFrameStartTime = performance.now()
 
     fpsMeasurements[frameCount % fpsMeasurements.length] = 1 / timelapse * 1000
-    const averageFPS = calculateAverageFPS()
-    document.title = `FPS: ${Math.round(averageFPS)}`
+    renderer.setFPS(calculateAverageFPS())
 
     frameCount++
     window.requestAnimationFrame(animationFrame)
