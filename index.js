@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function refreshViewPortSize() {
     const width = window.innerWidth
     const height = window.innerHeight
-    console.log('resize', width, height)
     canvas.width = width
     canvas.height = height
     renderer.setViewPortSize(width, height)
