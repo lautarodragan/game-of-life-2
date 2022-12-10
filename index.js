@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const gameInterval = new Interval(game.nextStep, 200)
 
   const renderer = Renderer(gl, game, camera)
+  renderer.setSpeed(200)
 
   function refreshViewPortSize() {
     const width = window.innerWidth
@@ -127,8 +128,14 @@ document.addEventListener('DOMContentLoaded', () => {
       
     } else if (event.code === 'ArrowLeft') {
       event.preventDefault()
-      gameInterval.intervalTime += 20
-      renderer.setSpeed(gameInterval.intervalTime)
+      
+      const maxSpeed = 1000
+      
+      if (gameInterval.intervalTime < maxSpeed) {
+        gameInterval.intervalTime = Math.min(gameInterval.intervalTime + 20, maxSpeed)
+        renderer.setSpeed(gameInterval.intervalTime)
+      }
+      
     } else if (event.code === 'ArrowUp') {
       event.preventDefault()
       game.decay += 8
