@@ -1,5 +1,3 @@
-import { fragmentShaderSource, vertexShaderSource } from '../shaders/game.js'
-
 function createShader(gl, shaderType, source) {
   const shader = gl.createShader(shaderType)
   gl.shaderSource(shader, source)
@@ -15,7 +13,7 @@ function createShader(gl, shaderType, source) {
   return shader
 }
 
-export function createProgram(gl) {
+export function createProgram(gl, vertexShaderSource, fragmentShaderSource) {
   const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource)
   const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource)
 

@@ -1,7 +1,8 @@
 import { createProgram } from './createProgram.js'
+import { fragmentShaderSource, vertexShaderSource } from '../shaders/game.js'
 
 export const WorldProgram = (gl) => {
-  const program = createProgram(gl)
+  const program = createProgram(gl, vertexShaderSource, fragmentShaderSource)
 
   const uResolution = gl.getUniformLocation(program, 'uResolution')
 
