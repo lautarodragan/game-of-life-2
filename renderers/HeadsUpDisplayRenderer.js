@@ -14,8 +14,6 @@ export const HeadsUpDisplayRenderer = (gl) => {
     if (!program.areTexturesLoaded())
       return
     
-    document.title = `FPS: ${Math.round(fps)}`
-  
     const text = ('FPS ' + Math.round(fps).toString()).toUpperCase()
     const positions = new Float32Array(text.length * componentsPerCharacter)
     const textureCoords = new Float32Array(text.length * componentsPerCharacter)
