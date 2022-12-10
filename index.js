@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const gameInterval = new Interval(game.nextStep, 200)
 
-  const renderer = Renderer(gl, game)
+  const renderer = Renderer(gl, game, camera)
 
   function refreshViewPortSize() {
     const width = window.innerWidth
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   requestAnimationFrame(function animationFrame() {
-    renderer.render(camera)
+    renderer.render()
     const timelapse = performance.now() - lastFrameStartTime
     lastFrameStartTime = performance.now()
 

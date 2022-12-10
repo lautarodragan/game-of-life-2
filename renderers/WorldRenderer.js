@@ -1,6 +1,6 @@
 import { WorldProgram } from '../programs/WorldProgram.js'
 
-export const WorldRenderer = (gl, game) => {
+export const WorldRenderer = (gl, game, camera) => {
   const program = WorldProgram(gl)
 
   const positionsScreen = (x, y, w, h) => new Float32Array([
@@ -18,7 +18,7 @@ export const WorldRenderer = (gl, game) => {
     Math.random() * life / 0xff,
   ])
 
-  function render(camera) {
+  function render() {
     gl.clear(gl.COLOR_BUFFER_BIT)
 
     const liveCellCount = game.getLiveCount()

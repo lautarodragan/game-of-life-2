@@ -1,7 +1,7 @@
 import { WorldRenderer } from './WorldRenderer.js'
 
-export const Renderer = (gl, game) => {
-  const worldRenderer = WorldRenderer(gl, game)
+export const Renderer = (gl, game, camera) => {
+  const worldRenderer = WorldRenderer(gl, game, camera)
 
   const viewportSize = {
     width: 0,
@@ -14,9 +14,9 @@ export const Renderer = (gl, game) => {
   gl.enable(gl.BLEND)
   gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
 
-  function render(camera) {
+  function render() {
     gl.clear(gl.COLOR_BUFFER_BIT)
-    worldRenderer.render(camera)
+    worldRenderer.render()
   }
 
   function setViewPortSize(width, height) {
