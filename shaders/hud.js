@@ -23,8 +23,7 @@ export const vertexShaderSource = `# version 300 es
   out vec2 vTextureCoord;
   
   void main() {
-    vec2 translated = aVertexPosition;
-    vec2 clipSpace = translated / uResolution * 2.0 - 1.0;
+    vec2 clipSpace = aVertexPosition / uResolution * 2.0 - 1.0;
     
     gl_Position = vec4(clipSpace, 0.0, 1.0);
     vTextureCoord = aTextureCoord;

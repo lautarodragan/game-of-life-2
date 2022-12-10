@@ -1,5 +1,6 @@
 import { createProgram } from './createProgram.js'
 import { fragmentShaderSource, vertexShaderSource } from '../shaders/hud.js'
+import { loadImage } from '../purish/loadImage.js'
 
 export const HeadsUpDisplayProgram = (gl) => {
   const program = createProgram(gl, vertexShaderSource, fragmentShaderSource)
@@ -10,6 +11,8 @@ export const HeadsUpDisplayProgram = (gl) => {
   const positionBuffer = gl.createBuffer()
   const textureCoordBuffer = gl.createBuffer()
   const fontTexture = gl.createTexture()
+  
+  let isFontTextureLoaded = false
   
   gl.uniform1i(uSampler, 0)
 
@@ -26,6 +29,7 @@ export const HeadsUpDisplayProgram = (gl) => {
   gl.bindTexture(gl.TEXTURE_2D, null)
   
   function use() {
+    gl.bindTexture(gl.TEXTURE_2D, fontTexture)
     gl.useProgram(program)
   }
   
@@ -53,16 +57,13 @@ export const HeadsUpDisplayProgram = (gl) => {
   }
   
   function loadFontTexture(url) {
-    console.log('loading image', url)
-    const image = new Image()
-    image.onload = () => {
-      console.log('image loaded', url)
+    loadImage(url, image => {
       const previousProgram = gl.getParameter(gl.CURRENT_PROGRAM)
       gl.useProgram(program)
       fontImageToTexture(image)
       gl.useProgram(previousProgram)
-    }
-    image.src = url
+      isFontTextureLoaded = true
+    })
   }
   
   function fontImageToTexture(image) {
@@ -70,6 +71,10 @@ export const HeadsUpDisplayProgram = (gl) => {
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image)
     gl.generateMipmap(gl.TEXTURE_2D);
     gl.bindTexture(gl.TEXTURE_2D, null)
+  }
+  
+  function areTexturesLoaded() {
+    return isFontTextureLoaded
   }
 
   return {
@@ -79,5 +84,6 @@ export const HeadsUpDisplayProgram = (gl) => {
     setPositions,
     setTextureCoords,
     loadFontTexture,
+    areTexturesLoaded,
   }
 }
