@@ -3,21 +3,6 @@ import { WorldProgram } from '../programs/WorldProgram.js'
 export const WorldRenderer = (gl, game, camera) => {
   const program = WorldProgram(gl)
 
-  const positionsScreen = (x, y, w, h) => new Float32Array([
-    x,     (y+h),
-    (x+w), (y+h),
-    x,     y,
-    (x+w), y,
-    x,     y,
-    (x+w), (y+h),
-  ])
-
-  const randomColorWithDecay = (life) => new Float32Array([
-    Math.random() * life / 0xff,
-    Math.random() * life / 0xff,
-    Math.random() * life / 0xff,
-  ])
-
   function render() {
     const liveCellCount = game.getLiveCount()
     let liveCellIndex = 0
@@ -62,12 +47,23 @@ export const WorldRenderer = (gl, game, camera) => {
     program.render(positions.length / 2)
   }
 
-  function setResolution(width, height) {
-    program.setResolution(width, height)
-  }
-
   return {
     render,
-    setResolution,
+    setResolution: program.setResolution,
   }
 }
+
+const positionsScreen = (x, y, w, h) => new Float32Array([
+  x,     (y+h),
+  (x+w), (y+h),
+  x,     y,
+  (x+w), y,
+  x,     y,
+  (x+w), (y+h),
+])
+
+const randomColorWithDecay = (life) => new Float32Array([
+  Math.random() * life / 0xff,
+  Math.random() * life / 0xff,
+  Math.random() * life / 0xff,
+])
