@@ -52,16 +52,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     return fps
   }
-
-  requestAnimationFrame(function animationFrame() {
-    renderer.render()
+  
+  const updateFPS = () => {
     const timelapse = performance.now() - lastFrameStartTime
     lastFrameStartTime = performance.now()
-
+  
     fpsMeasurements[frameCount % fpsMeasurements.length] = 1 / timelapse * 1000
     renderer.setFPS(calculateAverageFPS())
-
+  
     frameCount++
+  }
+  
+  requestAnimationFrame(function animationFrame() {
+    renderer.render()
+    updateFPS()
     window.requestAnimationFrame(animationFrame)
   })
 
