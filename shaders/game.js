@@ -18,10 +18,12 @@ export const fragmentShaderSource = `# version 300 es
 `
 
 export const vertexShaderSource = `# version 300 es
+  precision highp float;
+  
+  uniform vec2 uResolution;
+  
   in vec2 aVertexPosition;
   in vec3 vColor;
-
-  uniform vec2 uResolution;
   
   out vec3 fColor;
   

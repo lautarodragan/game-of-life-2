@@ -5,19 +5,22 @@ export const HeadsUpDisplayProgram = (gl) => {
   const program = createProgram(gl, vertexShaderSource, fragmentShaderSource)
 
   const uResolution = gl.getUniformLocation(program, 'uResolution')
+  const uSampler = gl.getUniformLocation(program, 'uSampler')
 
   const positionBuffer = gl.createBuffer()
   const textureCoordBuffer = gl.createBuffer()
   const fontTexture = gl.createTexture()
+  
+  gl.uniform1i(uSampler, 0)
 
   const position = gl.getAttribLocation(program, 'aVertexPosition')
-  gl.enableVertexAttribArray(position)
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-  // gl.vertexAttribPointer(positionAttribute, 2, gl.FLOAT, false, 0, 0)
+  // gl.enableVertexAttribArray(position)
+  // gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
+  // gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0)
   
   const textureCoord = gl.getAttribLocation(program, 'aTextureCoord')
-  gl.enableVertexAttribArray(textureCoord)
-  gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer)
+  // gl.enableVertexAttribArray(textureCoord)
+  // gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer)
   // gl.vertexAttribPointer(textureCoord, 2, gl.FLOAT, false, 0, 0)
   
   gl.bindTexture(gl.TEXTURE_2D, fontTexture)
@@ -25,6 +28,16 @@ export const HeadsUpDisplayProgram = (gl) => {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
   gl.bindTexture(gl.TEXTURE_2D, null)
+  
+  function use() {
+    gl.useProgram(program)
+    
+    const position = gl.getAttribLocation(program, 'aVertexPosition')
+    gl.enableVertexAttribArray(position)
+    
+    const textureCoord = gl.getAttribLocation(program, 'aTextureCoord')
+    gl.enableVertexAttribArray(textureCoord)
+  }
   
   function render(count) {
     gl.drawArrays(gl.TRIANGLES, 0, count)
@@ -40,6 +53,13 @@ export const HeadsUpDisplayProgram = (gl) => {
   function setPositions(positions) {
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
     gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW)
+    gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0)
+  }
+  
+  function setTextureCoords(textureCoords) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer)
+    gl.bufferData(gl.ARRAY_BUFFER, textureCoords, gl.STATIC_DRAW)
+    gl.vertexAttribPointer(textureCoord, 2, gl.FLOAT, false, 0, 0)
   }
   
   function loadFontTexture(url) {
@@ -63,10 +83,11 @@ export const HeadsUpDisplayProgram = (gl) => {
   }
 
   return {
-    use: () => { gl.useProgram(program) },
+    use,
     render,
     setResolution,
     setPositions,
+    setTextureCoords,
     loadFontTexture,
   }
 }

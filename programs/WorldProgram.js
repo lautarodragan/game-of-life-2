@@ -11,13 +11,13 @@ export const WorldProgram = (gl) => {
 
   const positionAttribute = gl.getAttribLocation(program, 'aVertexPosition')
   gl.enableVertexAttribArray(positionAttribute)
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-  gl.vertexAttribPointer(positionAttribute, 2, gl.FLOAT, false, 0, 0)
 
   const colorAttribute = gl.getAttribLocation(program, 'vColor');
   gl.enableVertexAttribArray(colorAttribute);
-  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-  gl.vertexAttribPointer(colorAttribute, 3, gl.FLOAT, false, 0, 0);
+  
+  function use() {
+    gl.useProgram(program)
+  }
   
   function render(count) {
     gl.drawArrays(gl.TRIANGLES, 0, count)
@@ -33,15 +33,17 @@ export const WorldProgram = (gl) => {
   function setPositions(positions) {
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
     gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW)
+    gl.vertexAttribPointer(positionAttribute, 2, gl.FLOAT, false, 0, 0)
   }
 
   function setColors(colors) {
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW)
+    gl.vertexAttribPointer(colorAttribute, 2, gl.FLOAT, false, 0, 0)
   }
 
   return {
-    use: () => { gl.useProgram(program) },
+    use,
     render,
     setResolution,
     setPositions,

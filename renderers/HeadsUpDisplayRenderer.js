@@ -12,9 +12,11 @@ export const HeadsUpDisplayRenderer = (gl) => {
     //   return
   
     const positions = new Float32Array(30)
+    const textureCoords = new Float32Array(30)
   
     program.use()
     program.setPositions(positions)
+    program.setTextureCoords(textureCoords)
     program.render(positions.length / 2)
   }
   
