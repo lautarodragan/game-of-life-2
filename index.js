@@ -1,7 +1,6 @@
 import { GameOfLife } from './GameOfLife.js'
 import { Interval } from './Interval.js'
 import { Renderer } from './renderers/Renderer.js'
-import { withPerformance } from './withPerformance.js'
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementsByTagName('canvas')[0]
@@ -21,16 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     h: 1,
   }
 
-  const onGamePerformance = (averageMeasure) => {
-    // document.title = `Avg: ${Math.round(averageMeasure)}`
-  }
-
-  const onRenderPerformance = (averageMeasure) => {
-    document.title = `Avg: ${Math.round(averageMeasure)}`
-  }
-
   const gameInterval = new Interval(
-    // withPerformance(game.nextStep, 10, onGamePerformance),
     game.nextStep,
     200,
   )
@@ -46,16 +36,13 @@ document.addEventListener('DOMContentLoaded', () => {
     renderer.setViewPortSize(width, height)
     camera.w = width
     camera.h = height
-    // camera.x = game.width / 2 * camera.z
-    // camera.y = game.height / 2 * camera.z
+    // TODO: adjust camera.x, camera.y so zoom is centered on the pointer
   }
 
   const mouseEventToBoardCoords = (event) => ({
     x: Math.floor((event.x + camera.x - camera.w / 2) / camera.z + game.width / 2),
     y: Math.floor((canvas.height - event.y + camera.y - camera.h / 2) / camera.z + game.height / 2),
   })
-
-  const renderWithPerformance = withPerformance(renderer.render, 10, onRenderPerformance)
 
   let frameCount = 0
   let lastFrameStartTime = performance.now()
@@ -71,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   requestAnimationFrame(function animationFrame() {
-    // renderWithPerformance(camera)
     renderer.render(camera)
     const timelapse = performance.now() - lastFrameStartTime
     lastFrameStartTime = performance.now()
@@ -79,8 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
     fpsMeasurements[frameCount % fpsMeasurements.length] = 1 / timelapse * 1000
     const averageFPS = calculateAverageFPS()
     document.title = `FPS: ${Math.round(averageFPS)}`
-    // document.title = `FPS: ${1 / timelapse * 1000}`
-    // document.title = `Frame Time: ${Math.round(timelapse)}`
 
     frameCount++
     window.requestAnimationFrame(animationFrame)

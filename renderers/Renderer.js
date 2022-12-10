@@ -12,7 +12,6 @@ export const Renderer = (game, gl) => {
   gl.clearDepth(1)
   gl.disable(gl.DEPTH_TEST)
   gl.enable(gl.BLEND)
-  // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
   gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
 
   function render(camera) {
