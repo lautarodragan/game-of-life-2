@@ -20,10 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     h: 1,
   }
 
-  const gameInterval = new Interval(
-    game.nextStep,
-    200,
-  )
+  const gameInterval = new Interval(game.nextStep, 200)
 
   const renderer = Renderer(gl, game)
 
