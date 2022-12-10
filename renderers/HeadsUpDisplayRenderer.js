@@ -4,6 +4,13 @@ const pointsPerCharacter = 4
 const componentsPerPoint = 2
 const componentsPerCharacter = pointsPerCharacter * componentsPerPoint
 
+const TextAlignment = {
+  BottomLeft: 'bottom-left',
+  TopLeft: 'top-left',
+  BottomRight: 'bottom-right',
+  TopRight: 'top-right',
+}
+
 export const HeadsUpDisplayRenderer = (gl) => {
   const program = HeadsUpDisplayProgram(gl)
   const charSize = 8
@@ -18,10 +25,10 @@ export const HeadsUpDisplayRenderer = (gl) => {
     program.use()
     const text = ('FPS ' + Math.round(fps).toString()).toUpperCase()
   
-    renderTextAligned(text, 'bottom-left')
-    renderTextAligned(text, 'top-left')
-    renderTextAligned(text, 'bottom-right')
-    renderTextAligned(text, 'top-right')
+    renderTextAligned(text, TextAlignment.BottomLeft)
+    renderTextAligned(text, TextAlignment.TopLeft)
+    renderTextAligned(text, TextAlignment.BottomRight)
+    renderTextAligned(text, TextAlignment.TopRight)
   }
   
   function renderText(text, x, y) {
@@ -54,14 +61,14 @@ export const HeadsUpDisplayRenderer = (gl) => {
     program.setResolution(width, height)
   }
   
-  function alignText(text, alignment = 'bottom-left') {
-    if (alignment === 'bottom-left')
+  function alignText(text, alignment) {
+    if (alignment === TextAlignment.BottomLeft)
       return [0, 0]
-    if (alignment === 'top-left')
+    if (alignment === TextAlignment.TopLeft)
       return [0, resolution.height - charSize * textZoom]
-    if (alignment === 'bottom-right')
+    if (alignment === TextAlignment.BottomRight)
       return [resolution.width - text.length * charSize * textZoom, 0]
-    if (alignment === 'top-right')
+    if (alignment === TextAlignment.TopRight)
       return [resolution.width - text.length * charSize * textZoom, resolution.height - charSize * textZoom]
     throw new Error(`Invalid alignment "${alignment}".`)
   }
