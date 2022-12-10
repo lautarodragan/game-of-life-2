@@ -27,6 +27,7 @@ export const HeadsUpDisplayRenderer = (gl) => {
     'UP/DOWN: INC/DEC DECAY RATE',
     'F: FILL',
     'R: CLEAR',
+    'SPACE: PLAY/PAUSE',
   ]
   
   function setFPS(_) {
