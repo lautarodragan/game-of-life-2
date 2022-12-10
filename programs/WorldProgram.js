@@ -39,7 +39,7 @@ export const WorldProgram = (gl) => {
   function setColors(colors) {
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW)
-    gl.vertexAttribPointer(colorAttribute, 2, gl.FLOAT, false, 0, 0)
+    gl.vertexAttribPointer(colorAttribute, 3, gl.FLOAT, false, 0, 0)
   }
 
   return {
