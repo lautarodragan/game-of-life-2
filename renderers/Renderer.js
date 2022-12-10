@@ -19,7 +19,7 @@ export const Renderer = (gl, game, camera) => {
   function render() {
     gl.clear(gl.COLOR_BUFFER_BIT)
     worldRenderer.render()
-    // headsUpDisplayRenderer.render()
+    headsUpDisplayRenderer.render()
   }
 
   function setViewPortSize(width, height) {
@@ -27,11 +27,11 @@ export const Renderer = (gl, game, camera) => {
     viewportSize.width = width
     viewportSize.height = height
     worldRenderer.setResolution(width, height)
-    // headsUpDisplayRenderer.setResolution(width, height)
+    headsUpDisplayRenderer.setResolution(width, height)
   }
   
   function loadTextures(url) {
-    // headsUpDisplayRenderer.loadFontTexture(url)
+    headsUpDisplayRenderer.loadFontTexture(url)
   }
   
   return {
