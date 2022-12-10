@@ -57,8 +57,8 @@ const sizedRecToScreenCoords = (x, y, w, h) => new Float32Array([
 ])
 
 export const textureCoordsSprite = (x, y, w, h) => new Float32Array([
-  x/w,     y/h,
   x/w,     (y+1)/h,
-  (x+1)/w, y/h,
+  x/w,     y/h,
   (x+1)/w, (y+1)/h,
+  (x+1)/w, y/h,
 ])
