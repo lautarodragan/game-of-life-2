@@ -7,18 +7,25 @@ export const HeadsUpDisplayProgram = (gl) => {
   const uResolution = gl.getUniformLocation(program, 'uResolution')
 
   const positionBuffer = gl.createBuffer()
+  const textureCoordBuffer = gl.createBuffer()
   const fontTexture = gl.createTexture()
 
   const positionAttribute = gl.getAttribLocation(program, 'aVertexPosition')
+  console.log('HUD positionAttribute', positionAttribute)
   gl.enableVertexAttribArray(positionAttribute)
   // gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
   // gl.vertexAttribPointer(positionAttribute, 2, gl.FLOAT, false, 0, 0)
   
-  // gl.bindTexture(gl.TEXTURE_2D, fontTexture)
-  // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
-  // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-  // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
-  // gl.bindTexture(gl.TEXTURE_2D, null)
+  const textureCoord = gl.getAttribLocation(program, 'aTextureCoord')
+  gl.enableVertexAttribArray(textureCoord)
+  gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer)
+  // gl.vertexAttribPointer(textureCoord, 2, gl.FLOAT, false, 0, 0)
+  
+  gl.bindTexture(gl.TEXTURE_2D, fontTexture)
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
+  gl.bindTexture(gl.TEXTURE_2D, null)
   
   function render(count) {
     gl.drawArrays(gl.TRIANGLES, 0, count)
