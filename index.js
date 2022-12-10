@@ -139,11 +139,11 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (event.code === 'ArrowUp') {
       event.preventDefault()
       game.decay += 8
-      console.log('decay', game.decay)
+      renderer.setDecay(game.decay)
     } else if (event.code === 'ArrowDown') {
       event.preventDefault()
       game.decay -= 8
-      console.log('decay', game.decay)
+      renderer.setDecay(game.decay)
     } else if (event.code === 'KeyR' && !event.ctrlKey) {
       event.preventDefault()
       game.clear()

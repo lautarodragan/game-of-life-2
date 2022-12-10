@@ -18,12 +18,15 @@ export const HeadsUpDisplayRenderer = (gl) => {
   const resolution = { width: 0, height: 0}
   let fps = 0
   let speed = 0
+  let decay = 0
   
   const instructions = [
-    'F: FILL',
-    'WHEEL: ZOOM',
     'LEFT CLICK: DRAW',
     'RIGHT CLICK: PAN',
+    'WHEEL: ZOOM',
+    'UP/DOWN: INC/DEC DECAY RATE',
+    'F: FILL',
+    'R: CLEAR',
   ]
   
   function setFPS(_) {
@@ -41,14 +44,15 @@ export const HeadsUpDisplayRenderer = (gl) => {
       return
     
     program.use()
-    const text = ('FPS ' + Math.round(fps).toString()).toUpperCase()
-  
-    // renderTextAligned(text, TextAlignment.BottomLeft)
-    renderTextAligned(text, TextAlignment.TopLeft)
-    renderTextAligned('SPEED: ' + speed.toString(), TextAlignment.BottomRight)
-    renderTextAligned(text, TextAlignment.TopRight)
-  
+    
+    const stats = [
+      'FPS: ' + Math.round(fps).toString(),
+      'SPEED: ' + speed.toString(),
+      'DECAY: ' + decay.toString(),
+    ]
+    
     renderMultiLineText(instructions, 0, 0)
+    renderMultiLineTextAligned(stats, TextAlignment.BottomRight)
   }
   
   function renderText(text, x, y) {
@@ -97,11 +101,21 @@ export const HeadsUpDisplayRenderer = (gl) => {
     
   }
   
+  function renderMultiLineTextAligned(text, alignment) {
+    if (alignment === TextAlignment.BottomLeft) {
+      renderMultiLineText(text, 0, 0)
+    } else if (alignment === TextAlignment.BottomRight) {
+      const maxWidth = text.map(line => line.length).reduce((line, acc) => line > acc ? line : acc, 0)
+      renderMultiLineText(text, resolution.width - maxWidth * charSize * textZoom, 0)
+    }
+  }
+  
   return {
     render,
     setResolution,
     setFPS,
     setSpeed: (_) => { speed = _ },
+    setDecay: (_) => { decay = _ },
     loadFontTexture: program.loadFontTexture,
   }
 }
