@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     200,
   )
 
-  const renderer = Renderer(game, gl)
+  const renderer = Renderer(gl, game)
 
   function refreshViewPortSize() {
     const width = window.innerWidth

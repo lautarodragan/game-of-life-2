@@ -1,7 +1,7 @@
 import { WorldRenderer } from './WorldRenderer.js'
 
-export const Renderer = (game, gl) => {
-  const worldRenderer = WorldRenderer(game, gl)
+export const Renderer = (gl, game) => {
+  const worldRenderer = WorldRenderer(gl, game)
 
   const viewportSize = {
     width: 0,

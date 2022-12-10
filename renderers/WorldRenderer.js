@@ -1,6 +1,6 @@
 import { WorldProgram } from '../programs/WorldProgram.js'
 
-export const WorldRenderer = (game, gl) => {
+export const WorldRenderer = (gl, game) => {
   const program = WorldProgram(gl)
 
   const positionsScreen = (x, y, w, h) => new Float32Array([
