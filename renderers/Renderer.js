@@ -39,6 +39,7 @@ export const Renderer = (gl, game, camera) => {
     render,
     setViewPortSize,
     setFPS: headsUpDisplayRenderer.setFPS,
+    setSpeed: headsUpDisplayRenderer.setSpeed,
     loadTextures,
   }
 }

@@ -17,6 +17,14 @@ export const HeadsUpDisplayRenderer = (gl) => {
   const textZoom = 4
   const resolution = { width: 0, height: 0}
   let fps = 0
+  let speed = 0
+  
+  const instructions = [
+    'F: FILL',
+    'WHEEL: ZOOM',
+    'LEFT CLICK: DRAW',
+    'RIGHT CLICK: PAN',
+  ]
   
   function setFPS(_) {
     fps = _
@@ -35,10 +43,12 @@ export const HeadsUpDisplayRenderer = (gl) => {
     program.use()
     const text = ('FPS ' + Math.round(fps).toString()).toUpperCase()
   
-    renderTextAligned(text, TextAlignment.BottomLeft)
+    // renderTextAligned(text, TextAlignment.BottomLeft)
     renderTextAligned(text, TextAlignment.TopLeft)
-    renderTextAligned(text, TextAlignment.BottomRight)
+    renderTextAligned('SPEED: ' + speed.toString(), TextAlignment.BottomRight)
     renderTextAligned(text, TextAlignment.TopRight)
+  
+    renderMultiLineText(instructions, 0, 0)
   }
   
   function renderText(text, x, y) {
@@ -78,10 +88,20 @@ export const HeadsUpDisplayRenderer = (gl) => {
     renderText(text, textAlignment[0], textAlignment[1])
   }
   
+  function renderMultiLineText(text, x, y) {
+    const lines = typeof text === 'string' ? text.split('\n') : text
+    
+    for (let i = 0; i < lines.length; i++) {
+      renderText(lines[i], x, y + (lines.length - 1) * charSize * textZoom - i * charSize * textZoom)
+    }
+    
+  }
+  
   return {
     render,
     setResolution,
     setFPS,
+    setSpeed: (_) => { speed = _ },
     loadFontTexture: program.loadFontTexture,
   }
 }

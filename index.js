@@ -119,12 +119,16 @@ document.addEventListener('DOMContentLoaded', () => {
       gameInterval.toggle()
     } else if (event.code === 'ArrowRight') {
       event.preventDefault()
-      gameInterval.intervalTime -= 20
-      console.log('speed', gameInterval.intervalTime)
+      
+      if (gameInterval.intervalTime > 0) {
+        gameInterval.intervalTime = Math.max(gameInterval.intervalTime - 20, 0)
+        renderer.setSpeed(gameInterval.intervalTime)
+      }
+      
     } else if (event.code === 'ArrowLeft') {
       event.preventDefault()
       gameInterval.intervalTime += 20
-      console.log('speed', gameInterval.intervalTime)
+      renderer.setSpeed(gameInterval.intervalTime)
     } else if (event.code === 'ArrowUp') {
       event.preventDefault()
       game.decay += 8
