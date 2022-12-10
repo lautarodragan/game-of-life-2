@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
   requestAnimationFrame(function animationFrame() {
     renderer.render()
     updateFPS()
-    window.requestAnimationFrame(animationFrame)
+    requestAnimationFrame(animationFrame)
   })
 
   addEventListener('resize', () => {
