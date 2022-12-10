@@ -1,7 +1,13 @@
 import { HeadsUpDisplayProgram } from '../programs/HeadsUpDisplayProgram.js'
 
+const pointsPerCharacter = 4
+const componentsPerPoint = 2
+const componentsPerCharacter = pointsPerCharacter * componentsPerPoint
+
 export const HeadsUpDisplayRenderer = (gl) => {
   const program = HeadsUpDisplayProgram(gl)
+  const charSize = 8
+  const textZoom = 4
   let fps = 0
 
   function render() {
@@ -10,20 +16,18 @@ export const HeadsUpDisplayRenderer = (gl) => {
     
     document.title = `FPS: ${Math.round(fps)}`
   
-    const text = 'FPS ' + Math.round(fps).toString()
-    const positions = new Float32Array(text.length * 4 * 2)
-    const textureCoords = new Float32Array(text.length * 4 * 2)
-    const charSize = 8
-    const textZoom = 4
+    const text = ('FPS ' + Math.round(fps).toString()).toUpperCase()
+    const positions = new Float32Array(text.length * componentsPerCharacter)
+    const textureCoords = new Float32Array(text.length * componentsPerCharacter)
     
     for (let i = 0; i < text.length; i++) {
-      const letterIndex = text.toUpperCase().codePointAt(i) - 65 + 33
-      const position = screenToViewPort(charSize * i, 0, charSize * textZoom, charSize * textZoom)
-      const texCoords = screenToViewPort(charSize * letterIndex, 0, charSize, charSize)
+      const letterIndex = text.codePointAt(i) - 65 + 33 // A=65. the texture has 33 special chars before A.
+      const position = sizedRecToScreenCoords(charSize * i * textZoom, 0, charSize * textZoom, charSize * textZoom)
+      const texCoords = textureCoordsSprite(letterIndex, 0, 83, 1)
       
-      for (let j = 0; j < 4 * 2; j++) {
-        positions[i * 4 * 2 + j] = position[j]
-        textureCoords[i * 4 * 2 + j] = texCoords[j]
+      for (let j = 0; j < componentsPerCharacter; j++) {
+        positions[i * componentsPerCharacter + j] = position[j]
+        textureCoords[i * componentsPerCharacter + j] = texCoords[j]
       }
     }
   
@@ -45,9 +49,16 @@ export const HeadsUpDisplayRenderer = (gl) => {
   }
 }
 
-const screenToViewPort = (x, y, w, h) => new Float32Array([
-  x,     y,
-  x,     (y+h),
-  (x+w), y,
-  (x+w), (y+h),
+const sizedRecToScreenCoords = (x, y, w, h) => new Float32Array([
+  x,    y,
+  x,    y+h,
+  x+w,  y,
+  x+w,  y+h,
+])
+
+export const textureCoordsSprite = (x, y, w, h) => new Float32Array([
+  x/w,     y/h,
+  x/w,     (y+1)/h,
+  (x+1)/w, y/h,
+  (x+1)/w, (y+1)/h,
 ])
