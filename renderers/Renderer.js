@@ -14,7 +14,8 @@ export const Renderer = (gl, game, camera) => {
   gl.clearDepth(1)
   gl.disable(gl.DEPTH_TEST)
   gl.enable(gl.BLEND)
-  gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+  gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true)
 
   function render() {
     gl.clear(gl.COLOR_BUFFER_BIT)
