@@ -19,8 +19,6 @@ export const WorldRenderer = (gl, game, camera) => {
   ])
 
   function render() {
-    gl.clear(gl.COLOR_BUFFER_BIT)
-
     const liveCellCount = game.getLiveCount()
     let liveCellIndex = 0
 
@@ -61,8 +59,7 @@ export const WorldRenderer = (gl, game, camera) => {
 
     program.setColors(colors)
     program.setPositions(positions)
-
-    gl.drawArrays(gl.TRIANGLES, 0, positions.length / 2)
+    program.render(positions.length / 2)
   }
 
   function setResolution(width, height) {

@@ -17,6 +17,10 @@ export const WorldProgram = (gl) => {
   gl.enableVertexAttribArray(colorAttribute);
   gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
   gl.vertexAttribPointer(colorAttribute, 3, gl.FLOAT, false, 0, 0);
+  
+  function render(count) {
+    gl.drawArrays(gl.TRIANGLES, 0, count)
+  }
 
   function setResolution(width, height) {
     gl.uniform2f(uResolution, width, height)
@@ -34,6 +38,7 @@ export const WorldProgram = (gl) => {
 
   return {
     program,
+    render,
     setResolution,
     setPositions,
     setColors,
