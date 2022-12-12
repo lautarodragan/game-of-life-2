@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     preserveDrawingBuffer : false,
     antialias: false,
   })
+  window.gl = gl
 
   const game = GameOfLife(300, 300)
   let pencil = 1

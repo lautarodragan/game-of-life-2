@@ -64,6 +64,7 @@ export const HeadsUpDisplayRenderer = (gl) => {
       const letterIndex = text.codePointAt(i) - 65 + 33 // A=65. the texture has 33 special chars before A.
       const position = sizedRecToScreenCoords(x + charSize * i * textZoom, y, charSize * textZoom, charSize * textZoom)
       const texCoords = textureCoordsSprite(letterIndex, 0, 83, 1)
+      // const texCoords = textureCoordsSprite(0, 0, 1, 1)
     
       for (let j = 0; j < componentsPerCharacter; j++) {
         positions[i * componentsPerCharacter + j] = position[j]

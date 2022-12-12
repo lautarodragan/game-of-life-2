@@ -1,14 +1,14 @@
 export const fragmentShaderSource = `# version 300 es
   precision highp float;
+  precision highp sampler2DArray;
   
-  uniform sampler2D uSampler;
+  uniform sampler2DArray uSampler;
   
   in vec2 vTextureCoord;
   out vec4 fragColor;
 
   void main() {
-    vec4 original = texture(uSampler, vTextureCoord);
-    fragColor = original;
+    fragColor = texture(uSampler, vec3(vTextureCoord, 0));
   }
 `
 

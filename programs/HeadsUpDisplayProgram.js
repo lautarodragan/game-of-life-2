@@ -22,13 +22,8 @@ export const HeadsUpDisplayProgram = (gl) => {
   const textureCoord = gl.getAttribLocation(program, 'aTextureCoord')
   gl.enableVertexAttribArray(textureCoord)
   
-  gl.bindTexture(gl.TEXTURE_2D, fontTexture)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
-  gl.bindTexture(gl.TEXTURE_2D, null)
-  
   function use() {
-    gl.bindTexture(gl.TEXTURE_2D, fontTexture)
+    gl.bindTexture(gl.TEXTURE_2D_ARRAY, fontTexture)
     gl.useProgram(program)
   }
   
@@ -66,10 +61,24 @@ export const HeadsUpDisplayProgram = (gl) => {
   }
   
   function fontImageToTexture(image) {
-    gl.bindTexture(gl.TEXTURE_2D, fontTexture)
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image)
-    gl.generateMipmap(gl.TEXTURE_2D);
-    gl.bindTexture(gl.TEXTURE_2D, null)
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D_ARRAY, fontTexture)
+    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texImage3D(
+      gl.TEXTURE_2D_ARRAY,
+      0,
+      gl.RGBA,
+      image.width,
+      8,
+      image.height / 8,
+      0,
+      gl.RGBA,
+      gl.UNSIGNED_BYTE,
+      image,
+    )
+    gl.generateMipmap(gl.TEXTURE_2D_ARRAY);
+    gl.bindTexture(gl.TEXTURE_2D_ARRAY, null)
   }
   
   function areTexturesLoaded() {
