@@ -14,11 +14,11 @@ const TextAlignment = {
 export const HeadsUpDisplayRenderer = (gl) => {
   const program = HeadsUpDisplayProgram(gl)
   const charSize = 8
-  const textZoom = 4
   const resolution = { width: 0, height: 0}
   let fps = 0
   let speed = 0
   let decay = 0
+  let textZoom = 4
   
   const instructions = [
     'LEFT CLICK: DRAW',
@@ -121,6 +121,8 @@ export const HeadsUpDisplayRenderer = (gl) => {
     setFPS,
     setSpeed: (_) => { speed = _ },
     setDecay: (_) => { decay = _ },
+    get textZoom() { return textZoom },
+    set textZoom(_) { textZoom = _ },
     loadFontTexture: program.loadFontTexture,
   }
 }

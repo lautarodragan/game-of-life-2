@@ -151,6 +151,12 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (event.code === 'KeyF' && !event.ctrlKey) {
       event.preventDefault()
       game.random()
+    } else if (event.code === 'Equal') {
+      event.preventDefault()
+      renderer.textZoom += .25
+    } else if (event.code === 'Minus') {
+      event.preventDefault()
+      renderer.textZoom -= .25
     }
   })
 

@@ -41,6 +41,9 @@ export const Renderer = (gl, game, camera) => {
     setFPS: headsUpDisplayRenderer.setFPS,
     setSpeed: headsUpDisplayRenderer.setSpeed,
     setDecay: headsUpDisplayRenderer.setDecay,
+    setTextZoom: headsUpDisplayRenderer.setTextZoom,
+    get textZoom() { return headsUpDisplayRenderer.textZoom },
+    set textZoom(_) { headsUpDisplayRenderer.textZoom = _ },
     loadTextures,
   }
 }
