@@ -59,12 +59,14 @@ export const HeadsUpDisplayRenderer = (gl) => {
   function renderText(text, x, y) {
     const positions = new Float32Array(text.length * componentsPerCharacter)
     const textureCoords = new Float32Array(text.length * componentsPerCharacter)
-  
+    const layers = new Uint8Array(text.length * pointsPerCharacter)
+    
     for (let i = 0; i < text.length; i++) {
       const letterIndex = text.codePointAt(i) - 65 + 33 // A=65. the texture has 33 special chars before A.
       const position = sizedRecToScreenCoords(x + charSize * i * textZoom, y, charSize * textZoom, charSize * textZoom)
-      const texCoords = textureCoordsSprite(letterIndex, 0, 83, 1)
-      // const texCoords = textureCoordsSprite(0, 0, 1, 1)
+      
+      for (let j = 0; j < pointsPerCharacter; j++)
+        layers[i * pointsPerCharacter + j] = letterIndex
     
       for (let j = 0; j < componentsPerCharacter; j++) {
         positions[i * componentsPerCharacter + j] = position[j]
@@ -74,6 +76,7 @@ export const HeadsUpDisplayRenderer = (gl) => {
   
     program.setPositions(positions)
     program.setTextureCoords(textureCoords)
+    program.setLayers(layers)
     program.render(positions.length / 2)
   }
 
@@ -135,3 +138,10 @@ export const textureCoordsSprite = (x, y, w, h) => new Float32Array([
   (x+1)/w, (y+1)/h,
   (x+1)/w, y/h,
 ])
+
+const texCoords = new Float32Array([
+  0, 1,
+  0, 0,
+  1, 1,
+  1, 0,
+]);

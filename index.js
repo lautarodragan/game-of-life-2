@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   function loadTextures() {
-    renderer.loadTextures('/images/bubblemad_8x8.png')
+    renderer.loadTextures('/images/bubblemad_8x8_v.png')
   }
   
   const mouseEventToBoardCoords = (event) => ({
