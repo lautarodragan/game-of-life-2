@@ -77,7 +77,7 @@ fn fs_main(in: VSOut) -> @location(0) vec4f {
     // One-pixel smoothstep across the circle edge. fwidth(d) gives the
     // screen-space change in d per pixel, so the AA band auto-scales with zoom.
     let aa = fwidth(d);
-    let alpha = 1.0 - smoothstep(0.5 - aa, 0.5, d);
+    let alpha = 1.0 - smoothstep(0.49 - aa, 0.49, d);
     if (alpha <= 0.0) { discard; }
     return vec4f(in.color, alpha);
   }
