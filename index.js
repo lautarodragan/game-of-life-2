@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const { device, context, format } = await initWebGPU(canvas)
 
-  const game = GameOfLife(device, 300, 300)
+  const game = GameOfLife(device, 800, 600)
   let pencil = 1
   const camera = {
     x: 0,
