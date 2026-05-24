@@ -56,6 +56,7 @@ export const Renderer = (device, context, format, canvas, game, camera) => {
     get textZoom() { return headsUpDisplayRenderer.textZoom },
     set textZoom(_) { headsUpDisplayRenderer.textZoom = _ },
     toggleHud: headsUpDisplayRenderer.toggleVisible,
+    cycleCellShape: worldRenderer.cycleCellShape,
     loadTextures,
   }
 }

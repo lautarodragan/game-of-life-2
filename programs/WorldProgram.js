@@ -22,7 +22,7 @@ export const WorldProgram = (device, format, stateBuffers) => {
 
   const bindGroupLayout = device.createBindGroupLayout({
     entries: [
-      { binding: 0, visibility: GPUShaderStage.VERTEX, buffer: { type: 'uniform' } },
+      { binding: 0, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { type: 'uniform' } },
       { binding: 1, visibility: GPUShaderStage.VERTEX, buffer: { type: 'read-only-storage' } },
     ],
   })
@@ -56,14 +56,15 @@ export const WorldProgram = (device, format, stateBuffers) => {
 
   const scratch = new ArrayBuffer(CAMERA_UNIFORM_SIZE)
   const scratchF = new Float32Array(scratch)
+  const scratchU = new Uint32Array(scratch)
 
-  function setCamera(camera, gridWidth, gridHeight, colorRGB01) {
+  function setCamera(camera, gridWidth, gridHeight, colorRGB01, mode) {
     scratchF[0] = camera.x
     scratchF[1] = camera.y
     scratchF[2] = camera.w
     scratchF[3] = camera.h
     scratchF[4] = camera.z
-    scratchF[5] = 0
+    scratchU[5] = mode
     scratchF[6] = gridWidth
     scratchF[7] = gridHeight
     // _pad1 at floats [8], [9] — leave zero

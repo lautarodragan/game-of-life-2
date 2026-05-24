@@ -156,6 +156,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else if (event.code === 'KeyT' && !event.ctrlKey) {
       event.preventDefault()
       renderer.toggleHud()
+    } else if (event.code === 'KeyC' && !event.ctrlKey) {
+      event.preventDefault()
+      renderer.cycleCellShape()
     }
   })
 

@@ -3,10 +3,10 @@ struct Camera {
   pos: vec2f,
   size: vec2f,
   zoom: f32,
-  _pad0: f32,
+  mode: u32,
   gridSize: vec2f,
   _pad1: vec2f,
-  color: vec4f,   // current frame color (use .xyz), values in [0, 1]
+  color: vec4f,
 };
 
 @group(0) @binding(0) var<uniform> cam: Camera;
@@ -15,6 +15,7 @@ struct Camera {
 struct VSOut {
   @builtin(position) pos: vec4f,
   @location(0) color: vec3f,
+  @location(1) uv: vec2f,
 };
 
 @vertex
@@ -31,6 +32,7 @@ fn vs_main(
   if (life == 0u) {
     out.pos = vec4f(2.0, 2.0, 0.0, 1.0);
     out.color = vec3f(0.0);
+    out.uv = vec2f(0.0);
     return out;
   }
 
@@ -64,11 +66,21 @@ fn vs_main(
 
   out.pos = vec4f(clip, 0.0, 1.0);
   out.color = rgb * lifeF;
+  out.uv = corner;
   return out;
 }
 
 @fragment
 fn fs_main(in: VSOut) -> @location(0) vec4f {
+  if (cam.mode == 1u) {
+    let d = distance(in.uv, vec2f(0.5, 0.5));
+    // One-pixel smoothstep across the circle edge. fwidth(d) gives the
+    // screen-space change in d per pixel, so the AA band auto-scales with zoom.
+    let aa = fwidth(d);
+    let alpha = 1.0 - smoothstep(0.5 - aa, 0.5, d);
+    if (alpha <= 0.0) { discard; }
+    return vec4f(in.color, alpha);
+  }
   return vec4f(in.color, 1.0);
 }
 `

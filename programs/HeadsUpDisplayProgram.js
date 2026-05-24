@@ -94,7 +94,7 @@ export const HeadsUpDisplayProgram = (device, format) => {
       label: 'hud-font',
       size: { width: tileSize, height: tileSize, depthOrArrayLayers: tileCount },
       format: 'rgba8unorm',
-      usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST,
+      usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
     })
 
     for (let i = 0; i < tileCount; i++) {

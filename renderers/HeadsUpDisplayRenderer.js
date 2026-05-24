@@ -28,6 +28,7 @@ export const HeadsUpDisplayRenderer = (device, format) => {
     'F: FILL',
     'R: CLEAR',
     'T: TOGGLE HUD',
+    'C: CYCLE CELL SHAPE',
     'SPACE: PLAY/PAUSE',
   ]
 
