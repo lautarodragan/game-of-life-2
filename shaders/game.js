@@ -87,7 +87,7 @@ fn vs_lines_main(
   let cy = cellIdx / W;
 
   let cell = cells[cellIdx];
-  if (cell.x != 255u) {
+  if (cell.x == 0u) {
     out.pos = vec4f(2.0, 2.0, 0.0, 1.0);
     out.color = vec3f(0.0);
     return out;
@@ -109,29 +109,44 @@ fn vs_lines_main(
   }
 
   let neighbour = cells[u32(nx) + u32(ny) * W];
-  if (neighbour.x != 255u) {
+  if (neighbour.x == 0u) {
     out.pos = vec4f(2.0, 2.0, 0.0, 1.0);
     out.color = vec3f(0.0);
     return out;
   }
 
-  let z = cam.zoom;
-  var endpointCellX: f32;
-  var endpointCellY: f32;
+  // Pick the endpoint cell for this vertex.
+  var endpointCell: vec4u;
+  var endpointX: u32;
+  var endpointY: u32;
   if (vi == 0u) {
-    endpointCellX = f32(cx) + 0.5;
-    endpointCellY = f32(cy) + 0.5;
+    endpointCell = cell;
+    endpointX = cx;
+    endpointY = cy;
   } else {
-    endpointCellX = f32(nx) + 0.5;
-    endpointCellY = f32(ny) + 0.5;
+    endpointCell = neighbour;
+    endpointX = u32(nx);
+    endpointY = u32(ny);
   }
 
+  let endpointLife = endpointCell.x;
+  var rgb: vec3f;
+  if (endpointLife == 255u) {
+    rgb = cam.color.xyz;
+  } else {
+    rgb = vec3f(endpointCell.yzw) / 255.0;
+  }
+  let lifeF = f32(endpointLife) / 255.0;
+
+  let z = cam.zoom;
+  let endpointCellX = f32(endpointX) + 0.5;
+  let endpointCellY = f32(endpointY) + 0.5;
   let screenX = endpointCellX * z - cam.pos.x + cam.size.x * 0.5 - cam.gridSize.x * 0.5 * z;
   let screenY = endpointCellY * z - cam.pos.y + cam.size.y * 0.5 - cam.gridSize.y * 0.5 * z;
   let clip = vec2f(screenX, screenY) / cam.size * 2.0 - 1.0;
 
   out.pos = vec4f(clip, 0.0, 1.0);
-  out.color = cam.color.xyz;
+  out.color = rgb * lifeF;
   return out;
 }
 
