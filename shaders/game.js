@@ -70,6 +70,71 @@ fn vs_main(
   return out;
 }
 
+@vertex
+fn vs_lines_main(
+  @builtin(vertex_index) vi: u32,
+  @builtin(instance_index) ii: u32,
+) -> VSOut {
+  let W = u32(cam.gridSize.x);
+  let H = u32(cam.gridSize.y);
+  let cellIdx = ii / 8u;
+  let dirIdx = ii % 8u;
+
+  var out: VSOut;
+  out.uv = vec2f(0.0);
+
+  let cx = cellIdx % W;
+  let cy = cellIdx / W;
+
+  let cell = cells[cellIdx];
+  if (cell.x != 255u) {
+    out.pos = vec4f(2.0, 2.0, 0.0, 1.0);
+    out.color = vec3f(0.0);
+    return out;
+  }
+
+  var dirs = array<vec2i, 8>(
+    vec2i(-1, -1), vec2i(0, -1), vec2i(1, -1),
+    vec2i(-1,  0),                vec2i(1,  0),
+    vec2i(-1,  1), vec2i(0,  1), vec2i(1,  1),
+  );
+  let dir = dirs[dirIdx];
+  let nx = i32(cx) + dir.x;
+  let ny = i32(cy) + dir.y;
+
+  if (nx < 0 || ny < 0 || nx >= i32(W) || ny >= i32(H)) {
+    out.pos = vec4f(2.0, 2.0, 0.0, 1.0);
+    out.color = vec3f(0.0);
+    return out;
+  }
+
+  let neighbour = cells[u32(nx) + u32(ny) * W];
+  if (neighbour.x != 255u) {
+    out.pos = vec4f(2.0, 2.0, 0.0, 1.0);
+    out.color = vec3f(0.0);
+    return out;
+  }
+
+  let z = cam.zoom;
+  var endpointCellX: f32;
+  var endpointCellY: f32;
+  if (vi == 0u) {
+    endpointCellX = f32(cx) + 0.5;
+    endpointCellY = f32(cy) + 0.5;
+  } else {
+    endpointCellX = f32(nx) + 0.5;
+    endpointCellY = f32(ny) + 0.5;
+  }
+
+  let screenX = endpointCellX * z - cam.pos.x + cam.size.x * 0.5 - cam.gridSize.x * 0.5 * z;
+  let screenY = endpointCellY * z - cam.pos.y + cam.size.y * 0.5 - cam.gridSize.y * 0.5 * z;
+  let clip = vec2f(screenX, screenY) / cam.size * 2.0 - 1.0;
+
+  out.pos = vec4f(clip, 0.0, 1.0);
+  out.color = cam.color.xyz;
+  return out;
+}
+
 @fragment
 fn fs_main(in: VSOut) -> @location(0) vec4f {
   if (cam.mode == 1u) {

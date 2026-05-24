@@ -3,12 +3,13 @@ import { WorldProgram } from '../programs/WorldProgram.js'
 export const CellShape = {
   Squares: 0,
   Circles: 1,
+  Lines1: 2,
 }
-const CELL_SHAPE_CYCLE = [CellShape.Squares, CellShape.Circles]
+const CELL_SHAPE_CYCLE = [CellShape.Squares, CellShape.Circles, CellShape.Lines1]
 
 export const WorldRenderer = (device, format, game, camera) => {
   const program = WorldProgram(device, format, game.getStateBuffers())
-  const instanceCount = game.width * game.height
+  const cellCount = game.width * game.height
   const frameColor = new Float32Array(3)
   let cellShape = CellShape.Squares
 
@@ -19,7 +20,7 @@ export const WorldRenderer = (device, format, game, camera) => {
     game.setCurrentColor(frameColor)
 
     program.setCamera(camera, game.width, game.height, frameColor, cellShape)
-    program.render(pass, game.getCurrentIndex(), instanceCount)
+    program.render(pass, game.getCurrentIndex(), cellShape, cellCount)
   }
 
   function setResolution(_w, _h) {}

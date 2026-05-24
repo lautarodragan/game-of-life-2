@@ -27,22 +27,30 @@ export const WorldProgram = (device, format, stateBuffers) => {
     ],
   })
 
-  const pipeline = device.createRenderPipeline({
-    label: 'world',
-    layout: device.createPipelineLayout({ bindGroupLayouts: [bindGroupLayout] }),
-    vertex: { module, entryPoint: 'vs_main' },
-    fragment: {
-      module,
-      entryPoint: 'fs_main',
-      targets: [{
-        format,
-        blend: {
-          color: { srcFactor: 'src-alpha', dstFactor: 'one-minus-src-alpha', operation: 'add' },
-          alpha: { srcFactor: 'src-alpha', dstFactor: 'one-minus-src-alpha', operation: 'add' },
-        },
-      }],
+  const blendTargets = [{
+    format,
+    blend: {
+      color: { srcFactor: 'src-alpha', dstFactor: 'one-minus-src-alpha', operation: 'add' },
+      alpha: { srcFactor: 'src-alpha', dstFactor: 'one-minus-src-alpha', operation: 'add' },
     },
+  }]
+
+  const pipelineLayout = device.createPipelineLayout({ bindGroupLayouts: [bindGroupLayout] })
+
+  const quadPipeline = device.createRenderPipeline({
+    label: 'world-quads',
+    layout: pipelineLayout,
+    vertex: { module, entryPoint: 'vs_main' },
+    fragment: { module, entryPoint: 'fs_main', targets: blendTargets },
     primitive: { topology: 'triangle-list' },
+  })
+
+  const linesPipeline = device.createRenderPipeline({
+    label: 'world-lines',
+    layout: pipelineLayout,
+    vertex: { module, entryPoint: 'vs_lines_main' },
+    fragment: { module, entryPoint: 'fs_main', targets: blendTargets },
+    primitive: { topology: 'line-list' },
   })
 
   const bindGroups = stateBuffers.map((buf, i) => device.createBindGroup({
@@ -76,10 +84,16 @@ export const WorldProgram = (device, format, stateBuffers) => {
     device.queue.writeBuffer(uniformBuffer, 0, scratch, 0, CAMERA_UNIFORM_SIZE)
   }
 
-  function render(pass, currentIdx, instanceCount) {
-    pass.setPipeline(pipeline)
+  // mode: 0 = squares, 1 = circles, 2 = lines1
+  function render(pass, currentIdx, mode, cellCount) {
     pass.setBindGroup(0, bindGroups[currentIdx])
-    pass.draw(6, instanceCount, 0, 0)
+    if (mode === 2) {
+      pass.setPipeline(linesPipeline)
+      pass.draw(2, cellCount * 8, 0, 0)
+    } else {
+      pass.setPipeline(quadPipeline)
+      pass.draw(6, cellCount, 0, 0)
+    }
   }
 
   return {
