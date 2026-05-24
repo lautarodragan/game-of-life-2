@@ -115,28 +115,30 @@ fn vs_lines_main(
     return out;
   }
 
-  // Pick the endpoint cell for this vertex.
-  var endpointCell: vec4u;
+  // Position depends on which vertex of the line we are.
   var endpointX: u32;
   var endpointY: u32;
   if (vi == 0u) {
-    endpointCell = cell;
     endpointX = cx;
     endpointY = cy;
   } else {
-    endpointCell = neighbour;
     endpointX = u32(nx);
     endpointY = u32(ny);
   }
 
-  let endpointLife = endpointCell.x;
+  // Color/brightness is the same for both vertices — picked from whichever
+  // endpoint is more alive. This keeps the line a single uniform color so the
+  // rasterizer doesn't interpolate a gradient across it.
+  var dominant: vec4u;
+  if (cell.x >= neighbour.x) { dominant = cell; } else { dominant = neighbour; }
+  let dominantLife = dominant.x;
   var rgb: vec3f;
-  if (endpointLife == 255u) {
+  if (dominantLife == 255u) {
     rgb = cam.color.xyz;
   } else {
-    rgb = vec3f(endpointCell.yzw) / 255.0;
+    rgb = vec3f(dominant.yzw) / 255.0;
   }
-  let lifeF = f32(endpointLife) / 255.0;
+  let lifeF = f32(dominantLife) / 255.0;
 
   let z = cam.zoom;
   let endpointCellX = f32(endpointX) + 0.5;
