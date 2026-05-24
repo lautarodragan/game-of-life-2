@@ -1,5 +1,6 @@
 import { GameOfLife } from './GameOfLife.js'
 import { Interval } from './Interval.js'
+import { Patterns } from './Patterns.js'
 import { Renderer, initWebGPU } from './renderers/Renderer.js'
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -89,7 +90,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   })
 
+  const lastMouse = { x: 0, y: 0 }
   document.addEventListener('mousemove', event => {
+    lastMouse.x = event.x
+    lastMouse.y = event.y
     if (event.buttons === 1) {
       const { x, y } = mouseEventToBoardCoords(event)
 
@@ -159,6 +163,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else if (event.code === 'KeyC' && !event.ctrlKey) {
       event.preventDefault()
       renderer.cycleCellShape()
+    } else if (event.code === 'Digit1') {
+      event.preventDefault()
+      pastePatternAtCursor(Patterns.glider)
+    } else if (event.code === 'Digit2') {
+      event.preventDefault()
+      pastePatternAtCursor(Patterns.lightweightSpaceship)
+    } else if (event.code === 'Digit3') {
+      event.preventDefault()
+      pastePatternAtCursor(Patterns.biClock)
     }
   })
 
@@ -171,6 +184,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       camera.z = newZoom
     }
   })
+
+  const pastePatternAtCursor = (pattern) => {
+    const { x, y } = mouseEventToBoardCoords(lastMouse)
+    const cols = pattern[0].length
+    const rows = pattern.length
+    game.pastePattern(pattern, x - Math.floor(cols / 2), y - Math.floor(rows / 2))
+  }
 
   const debugCamera = () => {
     document.title = `${Math.round(camera.x)}x, ${Math.round(camera.y)}y, ${Math.round(camera.z)}z, ${Math.round(camera.w)}w, ${Math.round(camera.h)}h`

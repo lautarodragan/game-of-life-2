@@ -88,6 +88,22 @@ export const GameOfLife = (device, width, height) => {
     device.queue.writeBuffer(stateBuffers[1], 0, data.buffer, 0, bufferSize)
   }
 
+  function pastePattern(pattern, x, y) {
+    const rows = pattern.length
+    if (rows === 0) return
+    const cols = pattern[0].length
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        if (!pattern[r][c]) continue
+        // Row 0 is the visual top of the pattern; our board uses y-up,
+        // so flip rows when mapping to board coords.
+        const bx = x + c
+        const by = y + (rows - 1 - r)
+        if (isInBounds(bx, by)) setValue(bx, by, 0xff)
+      }
+    }
+  }
+
   function setCurrentColor(rgb01) {
     currentColor255[0] = Math.round(rgb01[0] * 255)
     currentColor255[1] = Math.round(rgb01[1] * 255)
@@ -108,6 +124,7 @@ export const GameOfLife = (device, width, height) => {
     getStateBuffers() { return stateBuffers },
     getCurrentIndex() { return currentIdx },
     setCurrentColor,
+    pastePattern,
     isInBounds,
     getValue,
     setValue,
