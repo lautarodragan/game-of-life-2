@@ -1,12 +1,18 @@
 import { shaderSource } from '../shaders/step.js'
 
+// StepUniforms layout (32 bytes):
+//   vec2u gridSize @ 0
+//   u32   decay    @ 8
+//   u32   _pad     @ 12
+//   vec4u color    @ 16
+const STEP_UNIFORM_SIZE = 32
+
 export const StepProgram = (device, width, height, stateA, stateB) => {
   const module = device.createShaderModule({ label: 'step', code: shaderSource })
 
-  // uniforms: vec2u gridSize, u32 decay, u32 step → 16 bytes (already aligned).
   const uniformBuffer = device.createBuffer({
     label: 'step-uniforms',
-    size: 16,
+    size: STEP_UNIFORM_SIZE,
     usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
   })
 
@@ -34,18 +40,22 @@ export const StepProgram = (device, width, height, stateA, stateB) => {
   })
 
   const bindGroups = [
-    makeBindGroup(stateA, stateB), // current = A → write to B
-    makeBindGroup(stateB, stateA), // current = B → write to A
+    makeBindGroup(stateA, stateB),
+    makeBindGroup(stateB, stateA),
   ]
 
-  const uniformScratch = new Uint32Array(4)
+  const uniformScratch = new Uint32Array(STEP_UNIFORM_SIZE / 4)
 
-  function dispatch(currentIdx, decay, step) {
+  function dispatch(currentIdx, decay, colorRGB255) {
     uniformScratch[0] = width
     uniformScratch[1] = height
     uniformScratch[2] = decay
-    uniformScratch[3] = step
-    device.queue.writeBuffer(uniformBuffer, 0, uniformScratch.buffer, 0, 16)
+    uniformScratch[3] = 0
+    uniformScratch[4] = colorRGB255[0]
+    uniformScratch[5] = colorRGB255[1]
+    uniformScratch[6] = colorRGB255[2]
+    uniformScratch[7] = 0
+    device.queue.writeBuffer(uniformBuffer, 0, uniformScratch.buffer, 0, STEP_UNIFORM_SIZE)
 
     const encoder = device.createCommandEncoder({ label: 'step' })
     const pass = encoder.beginComputePass()

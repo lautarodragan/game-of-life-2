@@ -5,32 +5,17 @@ struct Camera {
   zoom: f32,
   _pad0: f32,
   gridSize: vec2f,
+  _pad1: vec2f,
+  color: vec4f,   // current frame color (use .xyz), values in [0, 1]
 };
 
 @group(0) @binding(0) var<uniform> cam: Camera;
-@group(0) @binding(1) var<storage, read> cells: array<vec2u>;
+@group(0) @binding(1) var<storage, read> cells: array<vec4u>;
 
 struct VSOut {
   @builtin(position) pos: vec4f,
   @location(0) color: vec3f,
 };
-
-// Simple integer hash → 3 channels in [0, 1].
-fn hash3(p: vec3u) -> vec3f {
-  var h: vec3u = p * vec3u(73856093u, 19349663u, 83492791u);
-  h.x = h.x ^ (h.y >> 13u);
-  h.y = h.y ^ (h.z >> 17u);
-  h.z = h.z ^ (h.x >> 5u);
-  h = h * 2654435761u;
-  h.x = h.x ^ (h.x >> 15u);
-  h.y = h.y ^ (h.y >> 15u);
-  h.z = h.z ^ (h.z >> 15u);
-  return vec3f(
-    f32(h.x & 0xffffu),
-    f32(h.y & 0xffffu),
-    f32(h.z & 0xffffu),
-  ) / 65535.0;
-}
 
 @vertex
 fn vs_main(
@@ -69,8 +54,12 @@ fn vs_main(
   let screen = vec2f(baseX + corner.x * z, baseY + corner.y * z);
   let clip = screen / cam.size * 2.0 - 1.0;
 
-  let birth = cell.y;
-  let rgb = hash3(vec3u(cx, cy, birth));
+  var rgb: vec3f;
+  if (life == 255u) {
+    rgb = cam.color.xyz;
+  } else {
+    rgb = vec3f(cell.yzw) / 255.0;
+  }
   let lifeF = f32(life) / 255.0;
 
   out.pos = vec4f(clip, 0.0, 1.0);
