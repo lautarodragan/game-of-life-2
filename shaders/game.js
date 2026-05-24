@@ -62,7 +62,9 @@ fn vs_main(
   } else {
     rgb = vec3f(cell.yzw) / 255.0;
   }
-  let lifeF = f32(life) / 255.0;
+  // Gamma the linear life ramp into a curve that's perceptually closer to
+  // v1's exponential framebuffer fade.
+  let lifeF = pow(f32(life) / 255.0, 2.2);
 
   out.pos = vec4f(clip, 0.0, 1.0);
   out.color = rgb * lifeF;
@@ -138,7 +140,7 @@ fn vs_lines_main(
   } else {
     rgb = vec3f(dominant.yzw) / 255.0;
   }
-  let lifeF = f32(dominantLife) / 255.0;
+  let lifeF = pow(f32(dominantLife) / 255.0, 2.2);
 
   let z = cam.zoom;
   let endpointCellX = f32(endpointX) + 0.5;
