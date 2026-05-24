@@ -153,6 +153,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else if (event.code === 'Minus') {
       event.preventDefault()
       renderer.textZoom -= .25
+    } else if (event.code === 'KeyT' && !event.ctrlKey) {
+      event.preventDefault()
+      renderer.toggleHud()
     }
   })
 

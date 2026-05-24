@@ -18,6 +18,7 @@ export const HeadsUpDisplayRenderer = (device, format) => {
   let speed = 0
   let decay = 0
   let textZoom = 4
+  let visible = true
 
   const instructions = [
     'LEFT CLICK: DRAW',
@@ -26,6 +27,7 @@ export const HeadsUpDisplayRenderer = (device, format) => {
     'UP/DOWN: INC/DEC DECAY RATE',
     'F: FILL',
     'R: CLEAR',
+    'T: TOGGLE HUD',
     'SPACE: PLAY/PAUSE',
   ]
 
@@ -43,6 +45,8 @@ export const HeadsUpDisplayRenderer = (device, format) => {
   }
 
   function render(pass) {
+    if (!visible)
+      return
     if (!program.areTexturesLoaded())
       return
 
@@ -149,6 +153,9 @@ export const HeadsUpDisplayRenderer = (device, format) => {
     setDecay: (_) => { decay = _ },
     get textZoom() { return textZoom },
     set textZoom(_) { textZoom = _ },
+    get visible() { return visible },
+    set visible(_) { visible = _ },
+    toggleVisible: () => { visible = !visible },
     loadFontTexture: program.loadFontTexture,
   }
 }
