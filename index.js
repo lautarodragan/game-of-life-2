@@ -2,14 +2,8 @@ import { GameOfLife } from './GameOfLife.js'
 import { Interval } from './Interval.js'
 import { Renderer } from './renderers/Renderer.js'
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const canvas = document.getElementsByTagName('canvas')[0]
-  const gl = canvas.getContext('webgl2',  {
-    alpha: false,
-    preserveDrawingBuffer : false,
-    antialias: false,
-  })
-  window.gl = gl
 
   const game = GameOfLife(300, 300)
   let pencil = 1
@@ -23,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const gameInterval = new Interval(game.nextStep, 200)
 
-  const renderer = Renderer(gl, game, camera)
+  const renderer = await Renderer(canvas, game, camera)
   renderer.setSpeed(200)
 
   function refreshViewPortSize() {

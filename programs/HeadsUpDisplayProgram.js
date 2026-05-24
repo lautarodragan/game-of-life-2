@@ -1,132 +1,135 @@
-import { createProgram } from './createProgram.js'
-import { fragmentShaderSource, vertexShaderSource } from '../shaders/hud.js'
+import { shaderSource } from '../shaders/hud.js'
+import { uploadVertexBuffer } from './createProgram.js'
 import { loadImage } from '../purish/loadImage.js'
 
-export const HeadsUpDisplayProgram = (gl) => {
-  const program = createProgram(gl, vertexShaderSource, fragmentShaderSource)
+export const HeadsUpDisplayProgram = (device, format) => {
+  const module = device.createShaderModule({ label: 'hud', code: shaderSource })
 
-  const uResolution = gl.getUniformLocation(program, 'uResolution')
-  const uSampler = gl.getUniformLocation(program, 'uSampler')
+  const uniformBuffer = device.createBuffer({
+    label: 'hud-uniforms',
+    size: 16,
+    usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+  })
 
-  const positionBuffer = gl.createBuffer()
-  const textureCoordBuffer = gl.createBuffer()
-  const layerBuffer = gl.createBuffer()
-  
-  const fontTexture = gl.createTexture()
-  
-  let isFontTextureLoaded = false
-  
-  gl.uniform1i(uSampler, 0)
+  const sampler = device.createSampler({
+    magFilter: 'linear',
+    minFilter: 'linear',
+    addressModeU: 'clamp-to-edge',
+    addressModeV: 'clamp-to-edge',
+  })
 
-  const position = gl.getAttribLocation(program, 'aVertexPosition')
-  gl.enableVertexAttribArray(position)
-  
-  const textureCoord = gl.getAttribLocation(program, 'aTextureCoord')
-  gl.enableVertexAttribArray(textureCoord)
-  
-  const layer = gl.getAttribLocation(program, 'aLayer')
-  gl.enableVertexAttribArray(layer)
-  
-  function use() {
-    gl.bindTexture(gl.TEXTURE_2D_ARRAY, fontTexture)
-    gl.useProgram(program)
-  }
-  
-  function render(count) {
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, count)
-  }
+  const bindGroupLayout = device.createBindGroupLayout({
+    entries: [
+      { binding: 0, visibility: GPUShaderStage.VERTEX, buffer: { type: 'uniform' } },
+      { binding: 1, visibility: GPUShaderStage.FRAGMENT, sampler: { type: 'filtering' } },
+      { binding: 2, visibility: GPUShaderStage.FRAGMENT, texture: { viewDimension: '2d-array', sampleType: 'float' } },
+    ],
+  })
+
+  const pipeline = device.createRenderPipeline({
+    label: 'hud',
+    layout: device.createPipelineLayout({ bindGroupLayouts: [bindGroupLayout] }),
+    vertex: {
+      module,
+      entryPoint: 'vs_main',
+      buffers: [
+        { arrayStride: 2 * 4, attributes: [{ shaderLocation: 0, offset: 0, format: 'float32x2' }] },
+        { arrayStride: 2 * 4, attributes: [{ shaderLocation: 1, offset: 0, format: 'float32x2' }] },
+        { arrayStride: 4,     attributes: [{ shaderLocation: 2, offset: 0, format: 'uint32'    }] },
+      ],
+    },
+    fragment: {
+      module,
+      entryPoint: 'fs_main',
+      targets: [{
+        format,
+        blend: {
+          color: { srcFactor: 'src-alpha', dstFactor: 'one-minus-src-alpha', operation: 'add' },
+          alpha: { srcFactor: 'src-alpha', dstFactor: 'one-minus-src-alpha', operation: 'add' },
+        },
+      }],
+    },
+    primitive: { topology: 'triangle-list' },
+  })
+
+  let positionBuffer = null
+  let textureCoordBuffer = null
+  let layerBuffer = null
+  let fontTexture = null
+  let bindGroup = null
+  const resolution = new Float32Array(4)
 
   function setResolution(width, height) {
-    const previousProgram = gl.getParameter(gl.CURRENT_PROGRAM)
-    gl.useProgram(program)
-    gl.uniform2f(uResolution, width, height)
-    gl.useProgram(previousProgram)
+    resolution[0] = width
+    resolution[1] = height
+    device.queue.writeBuffer(uniformBuffer, 0, resolution.buffer, resolution.byteOffset, 16)
   }
 
   function setPositions(positions) {
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-    gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW)
-    gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0)
+    positionBuffer = uploadVertexBuffer(device, positionBuffer, positions, 'hud-positions')
   }
-  
-  function setLayers(layers) {
-    gl.bindBuffer(gl.ARRAY_BUFFER, layerBuffer)
-    gl.bufferData(gl.ARRAY_BUFFER, layers, gl.STATIC_DRAW)
-    gl.vertexAttribIPointer(layer, 1, gl.UNSIGNED_BYTE, 0, 0)
+
+  function setTextureCoords(coords) {
+    textureCoordBuffer = uploadVertexBuffer(device, textureCoordBuffer, coords, 'hud-tex-coords')
   }
-  
-  function setTextureCoords(textureCoords) {
-    gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer)
-    gl.bufferData(gl.ARRAY_BUFFER, textureCoords, gl.STATIC_DRAW)
-    gl.vertexAttribPointer(textureCoord, 2, gl.FLOAT, false, 0, 0)
+
+  function setLayers(layersU8) {
+    // The vertex format `uint32` needs one u32 per vertex.
+    const layers = new Uint32Array(layersU8.length)
+    for (let i = 0; i < layersU8.length; i++) layers[i] = layersU8[i]
+    layerBuffer = uploadVertexBuffer(device, layerBuffer, layers, 'hud-layers')
   }
-  
+
   function loadFontTexture(url) {
     loadImage(url, image => {
-      const previousProgram = gl.getParameter(gl.CURRENT_PROGRAM)
-      gl.useProgram(program)
       fontImageToTexture(image)
-      gl.useProgram(previousProgram)
-      isFontTextureLoaded = true
     })
   }
-  
-  function imageToPixels(image, invert = false, tileSize) {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    // https://github.com/WebKit/WebKit/blob/a9b66fad8de2f2a774d86bfd78afa01b77f6df8a/Source/WebCore/html/canvas/WebGLRenderingContextBase.h#L885
-    // According to the WebGL 2.0 spec, specifying depth > 1 means to select multiple rectangles stacked vertically.
-  
-    if (invert) { // if (image.width > tileSize)
-      canvas.width = tileSize;
-      canvas.height = image.width;
-      for (let x = 0; x < image.width / tileSize; x++) {
-        ctx.drawImage(image, x * tileSize, 0, tileSize, tileSize, 0, x * tileSize, tileSize, tileSize);
-      }
-      document.body.appendChild(canvas)
-    } else {
-      canvas.width = image.width;
-      canvas.height = image.height;
-      ctx.drawImage(image, 0, 0);
-    }
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    return new Uint8Array(imageData.data.buffer);
-  }
-  
+
   function fontImageToTexture(image) {
     const tileSize = 8
     const tileCount = image.height / tileSize
-    // console.log('fontImageToTexture', image.width, image.height, tileCount)
-    // const pixels = imageToPixels(image, false, tileSize)
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D_ARRAY, fontTexture)
-    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texImage3D(
-      gl.TEXTURE_2D_ARRAY,
-      0,
-      gl.RGBA,
-      tileSize,
-      tileSize,
-      tileCount,
-      0,
-      gl.RGBA,
-      gl.UNSIGNED_BYTE,
-      image,
-    )
-    gl.generateMipmap(gl.TEXTURE_2D_ARRAY);
-    gl.bindTexture(gl.TEXTURE_2D_ARRAY, null)
+
+    fontTexture = device.createTexture({
+      label: 'hud-font',
+      size: { width: tileSize, height: tileSize, depthOrArrayLayers: tileCount },
+      format: 'rgba8unorm',
+      usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST,
+    })
+
+    for (let i = 0; i < tileCount; i++) {
+      device.queue.copyExternalImageToTexture(
+        { source: image, origin: { x: 0, y: i * tileSize } },
+        { texture: fontTexture, origin: { x: 0, y: 0, z: i } },
+        { width: tileSize, height: tileSize, depthOrArrayLayers: 1 },
+      )
+    }
+
+    bindGroup = device.createBindGroup({
+      layout: bindGroupLayout,
+      entries: [
+        { binding: 0, resource: { buffer: uniformBuffer } },
+        { binding: 1, resource: sampler },
+        { binding: 2, resource: fontTexture.createView({ dimension: '2d-array' }) },
+      ],
+    })
   }
-  
+
+  function render(pass, count) {
+    if (count === 0 || !bindGroup || !positionBuffer || !textureCoordBuffer || !layerBuffer) return
+    pass.setPipeline(pipeline)
+    pass.setBindGroup(0, bindGroup)
+    pass.setVertexBuffer(0, positionBuffer)
+    pass.setVertexBuffer(1, textureCoordBuffer)
+    pass.setVertexBuffer(2, layerBuffer)
+    pass.draw(count, 1, 0, 0)
+  }
+
   function areTexturesLoaded() {
-    return isFontTextureLoaded
+    return bindGroup !== null
   }
 
   return {
-    use,
     render,
     setResolution,
     setPositions,

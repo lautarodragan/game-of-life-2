@@ -1,14 +1,14 @@
 import { WorldProgram } from '../programs/WorldProgram.js'
 
-export const WorldRenderer = (gl, game, camera) => {
-  const program = WorldProgram(gl)
+export const WorldRenderer = (device, format, game, camera) => {
+  const program = WorldProgram(device, format)
 
-  function render() {
+  function render(pass) {
     const liveCellCount = game.getLiveCount()
     let liveCellIndex = 0
 
-    const colors = new Float32Array(liveCellCount * 6 * 3) // 6 points, 3 color components each (rgb)
-    const positions = new Float32Array(liveCellCount * 6 * 2) // 6 points, 2 coordinate components each (x, y)
+    const colors = new Float32Array(liveCellCount * 6 * 3)
+    const positions = new Float32Array(liveCellCount * 6 * 2)
 
     for (let x = 0; x < game.width; x++) {
       for (let y = 0; y < game.height; y++) {
@@ -19,8 +19,8 @@ export const WorldRenderer = (gl, game, camera) => {
 
         const rgb = randomColorWithDecay(life)
 
-        for (let i = 0; i < 6; i++) { // for each point in the square
-          for (let j = 0; j < 3; j++) { // for each color component
+        for (let i = 0; i < 6; i++) {
+          for (let j = 0; j < 3; j++) {
             colors[liveCellIndex * 6 * 3 + i * 3 + j] = rgb[j]
           }
         }
@@ -32,8 +32,8 @@ export const WorldRenderer = (gl, game, camera) => {
           camera.z,
         )
 
-        for (let i = 0; i < 6; i++) { // for each point in the square
-          for (let j = 0; j < 2; j++) { // for each color component
+        for (let i = 0; i < 6; i++) {
+          for (let j = 0; j < 2; j++) {
             positions[liveCellIndex * 6 * 2 + i * 2 + j] = vertices[i * 2 + j]
           }
         }
@@ -41,11 +41,10 @@ export const WorldRenderer = (gl, game, camera) => {
         liveCellIndex++
       }
     }
-  
-    program.use()
+
     program.setColors(colors)
     program.setPositions(positions)
-    program.render(positions.length / 2)
+    program.render(pass, positions.length / 2)
   }
 
   return {

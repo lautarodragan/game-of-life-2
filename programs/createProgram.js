@@ -1,36 +1,22 @@
-export function createProgram(gl, vertexShaderSource, fragmentShaderSource) {
-  const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource)
-  const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource)
-  
-  const program = gl.createProgram()
-  gl.attachShader(program, vertexShader)
-  gl.attachShader(program, fragmentShader)
-  gl.linkProgram(program)
-  
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    console.log('Unable to link program')
-    console.log(gl.getProgramInfoLog(program))
-    throw new Error('Unable to link program')
-  }
-  
-  gl.useProgram(program)
-  
-  return program
+export function createShaderModule(device, code, label) {
+  return device.createShaderModule({ label, code })
 }
 
-function createShader(gl, shaderType, source) {
-  const shader = gl.createShader(shaderType)
-  gl.shaderSource(shader, source)
-  gl.compileShader(shader)
-
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error('Unable to compile shader')
-    console.error(gl.getShaderInfoLog(shader))
-    console.error(source)
-    throw new Error('Unable to compile Shader')
+// Helper that grows a GPU buffer to fit `byteLength` and uploads `data`.
+// Returns the (possibly new) buffer. Pass the previous buffer (or null) as `prev`.
+export function uploadVertexBuffer(device, prev, data, label) {
+  const byteLength = Math.max(data.byteLength, 4)
+  let buffer = prev
+  if (!buffer || buffer.size < byteLength) {
+    if (buffer) buffer.destroy()
+    buffer = device.createBuffer({
+      label,
+      size: byteLength,
+      usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+    })
   }
-
-  return shader
+  if (data.byteLength > 0) {
+    device.queue.writeBuffer(buffer, 0, data.buffer, data.byteOffset, data.byteLength)
+  }
+  return buffer
 }
-
-

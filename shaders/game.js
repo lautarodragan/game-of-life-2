@@ -1,38 +1,29 @@
-export const fragmentShaderSource = `# version 300 es
-  precision highp float;
-  
-  in vec3 fColor;
-  out vec4 fragColor;
-  
-  // uniform sampler2D uSampler;
-  // uniform vec4 uColor;
-  // uniform bool bAlter;
+export const shaderSource = `
+struct Uniforms {
+  resolution: vec2f,
+};
 
-  void main() {
-    // vec4 original = texture(uSampler, vTextureCoord);
-    // fragColor = vec4(1, 0, 0, 1);
-    // fragColor = uColor;
-    fragColor = vec4(fColor, 1.0);
-    // fragColor = fColor;
-  }
-`
+@group(0) @binding(0) var<uniform> u: Uniforms;
 
-export const vertexShaderSource = `# version 300 es
-  precision highp float;
-  
-  uniform vec2 uResolution;
-  
-  in vec2 aVertexPosition;
-  in vec3 vColor;
-  
-  out vec3 fColor;
-  
-  void main() {
-    // vec2 translated = aVertexPosition + uResolution / 2.0;
-    vec2 translated = aVertexPosition;
-    vec2 clipSpace = translated / uResolution * 2.0 - 1.0;
-    
-    gl_Position = vec4(clipSpace, 0.0, 1.0);
-    fColor = vColor;
-  }
+struct VSOut {
+  @builtin(position) pos: vec4f,
+  @location(0) color: vec3f,
+};
+
+@vertex
+fn vs_main(
+  @location(0) position: vec2f,
+  @location(1) color: vec3f,
+) -> VSOut {
+  let clip = position / u.resolution * 2.0 - 1.0;
+  var out: VSOut;
+  out.pos = vec4f(clip, 0.0, 1.0);
+  out.color = color;
+  return out;
+}
+
+@fragment
+fn fs_main(in: VSOut) -> @location(0) vec4f {
+  return vec4f(in.color, 1.0);
+}
 `
