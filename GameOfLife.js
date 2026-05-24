@@ -32,7 +32,7 @@ export const GameOfLife = (device, width, height) => {
 
   const step = StepProgram(device, width, height, stateBuffers[0], stateBuffers[1])
 
-  let _decay = 0x1f
+  let _decay = 0x0f
   let currentIdx = 0
   const shadow = new Uint8Array(cellCount)
 

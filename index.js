@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       event.preventDefault()
       
       if (gameInterval.intervalTime > 0) {
-        gameInterval.intervalTime = Math.max(gameInterval.intervalTime - 20, 0)
+        gameInterval.intervalTime = Math.max(gameInterval.intervalTime - 5, 0)
         renderer.setSpeed(gameInterval.intervalTime)
       }
       
@@ -133,17 +133,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       const maxSpeed = 1000
       
       if (gameInterval.intervalTime < maxSpeed) {
-        gameInterval.intervalTime = Math.min(gameInterval.intervalTime + 20, maxSpeed)
+        gameInterval.intervalTime = Math.min(gameInterval.intervalTime + 5, maxSpeed)
         renderer.setSpeed(gameInterval.intervalTime)
       }
       
     } else if (event.code === 'ArrowUp') {
       event.preventDefault()
-      game.decay += 8
+      game.decay += 2
       renderer.setDecay(game.decay)
     } else if (event.code === 'ArrowDown') {
       event.preventDefault()
-      game.decay -= 8
+      game.decay -= 2
       renderer.setDecay(game.decay)
     } else if (event.code === 'KeyR' && !event.ctrlKey) {
       event.preventDefault()
