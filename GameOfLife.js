@@ -1,70 +1,95 @@
-import { Matrix } from './Matrix.js';
+import { StepProgram } from './programs/StepProgram.js'
 
-export const GameOfLife = (width, height) => {
-  const matrix1 = new Matrix(width, height);
-  const matrix2 = new Matrix(width, height);
-  let matrix = matrix1
+// Each cell is a vec2<u32> in GPU memory: (life, birthStep). 8 bytes per cell.
+const BYTES_PER_CELL = 8
+
+export const GameOfLife = (device, width, height) => {
+  const cellCount = width * height
+  const bufferSize = cellCount * BYTES_PER_CELL
+
+  const stateBuffers = [
+    device.createBuffer({
+      label: 'gol-state-a',
+      size: bufferSize,
+      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST | GPUBufferUsage.COPY_SRC,
+    }),
+    device.createBuffer({
+      label: 'gol-state-b',
+      size: bufferSize,
+      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST | GPUBufferUsage.COPY_SRC,
+    }),
+  ]
+
+  // Zero both state buffers — newly created storage buffers have undefined contents.
+  {
+    const zeros = new Uint32Array(cellCount * 2)
+    device.queue.writeBuffer(stateBuffers[0], 0, zeros.buffer, 0, bufferSize)
+    device.queue.writeBuffer(stateBuffers[1], 0, zeros.buffer, 0, bufferSize)
+  }
+
+  const step = StepProgram(device, width, height, stateBuffers[0], stateBuffers[1])
+
   let _decay = 0x1f
+  let currentIdx = 0       // index of the buffer the renderer reads from
+  let stepCounter = 0      // increments each nextStep — used as birthStep value
+  const shadow = new Uint8Array(cellCount) // CPU shadow of cell `life`, best-effort
 
-  const toggleValue = (x, y) => {
-    matrix.setValue(x, y, matrix.getValue(x, y) ? 0 : 0xff)
+  // Scratch used to upload a single cell's vec2u via writeBuffer.
+  const cellScratch = new Uint32Array(2)
+
+  function writeCell(bufIdx, x, y, life, birth) {
+    cellScratch[0] = life
+    cellScratch[1] = birth
+    const offset = (x + y * width) * BYTES_PER_CELL
+    device.queue.writeBuffer(stateBuffers[bufIdx], offset, cellScratch.buffer, 0, BYTES_PER_CELL)
   }
 
-  const nextStep = () => {
-    const oldMatrix = matrix
-    const newMatrix = matrix === matrix1 ? matrix2 : matrix1
+  function setValue(x, y, value) {
+    if (!isInBounds(x, y)) throw new Error(`Not in bounds: ${x}, ${y}`)
+    // Write to both ping-pong buffers so paint isn't lost on the next step's flip.
+    writeCell(0, x, y, value, stepCounter)
+    writeCell(1, x, y, value, stepCounter)
+    shadow[x + y * width] = value
+  }
 
-    for (let x = 0; x < newMatrix.width; x++) {
-      for (let y = 0; y < newMatrix.height; y++) {
-        const liveNeighbours = getLiveNeighbourCount(x, y);
-        const newValue = getCellState(oldMatrix.getValue(x, y), liveNeighbours);
+  function toggleValue(x, y) {
+    const current = shadow[x + y * width]
+    setValue(x, y, current ? 0 : 0xff)
+  }
 
-        newMatrix.setValue(x, y, newValue);
-      }
+  function getValue(x, y) {
+    return shadow[x + y * width]
+  }
+
+  function isInBounds(x, y) {
+    return x >= 0 && y >= 0 && x < width && y < height
+  }
+
+  function clear() {
+    const zeros = new Uint32Array(cellCount * 2)
+    device.queue.writeBuffer(stateBuffers[0], 0, zeros.buffer, 0, bufferSize)
+    device.queue.writeBuffer(stateBuffers[1], 0, zeros.buffer, 0, bufferSize)
+    shadow.fill(0)
+  }
+
+  function random() {
+    const data = new Uint32Array(cellCount * 2)
+    for (let i = 0; i < cellCount; i++) {
+      const alive = Math.random() > 0.75 ? 0xff : 0
+      data[i * 2 + 0] = alive
+      data[i * 2 + 1] = stepCounter
+      shadow[i] = alive
     }
-
-    matrix = newMatrix;
+    device.queue.writeBuffer(stateBuffers[0], 0, data.buffer, 0, bufferSize)
+    device.queue.writeBuffer(stateBuffers[1], 0, data.buffer, 0, bufferSize)
   }
 
-  const getLiveNeighbourCount = (dx, dy) => {
-    let count = 0;
-    for (let x = dx - 1; x < dx + 2; x++) {
-      for (let y = dy - 1; y < dy + 2; y++) {
-        if (x === dx && y === dy)
-          continue;
-        if (matrix.isInBounds(x, y) && matrix.getValue(x, y) === 0xff)
-          count++;
-      }
-    }
-    return count;
-  }
-
-  const getCellState = (state, liveNeighbours) => {
-    if (state === 0xff)
-      return liveNeighbours < 2 || liveNeighbours > 3 ? Math.max(state - _decay, 0) : 0xff;
-    else
-      return liveNeighbours === 3 ? 0xff : Math.max(state - _decay, 0);
-  }
-
-  const clear = () => {
-    matrix1.clear()
-    matrix2.clear()
-  }
-
-  const random = () => {
-    for (let i = 0; i < matrix1.cells.length; i++) {
-      matrix1.cells[i] = matrix2.cells[i] = Math.random() > .75 ? 0xff : 0
-    }
-  }
-
-  const getLiveCount = () => {
-    let count = 0
-
-    for (let i = 0; i < matrix.cells.length; i++)
-      if (matrix.cells[i])
-        count++
-
-    return count
+  function nextStep() {
+    stepCounter++
+    step.dispatch(currentIdx, _decay, stepCounter)
+    currentIdx = 1 - currentIdx
+    // Shadow is now stale w.r.t. cells touched by simulation. We leave it alone:
+    // user-painted cells stay accurate; sim-driven changes are not reflected.
   }
 
   return {
@@ -72,16 +97,15 @@ export const GameOfLife = (width, height) => {
     get height() { return height },
     get decay() { return _decay },
     set decay(v) { _decay = Math.min(Math.max(v, 0), 0xff) },
-    isInBounds(x, y) { return matrix.isInBounds(x, y) },
-    getValue(x, y) { return matrix.getValue(x, y) },
-    setValue(x, y, v) { return matrix.setValue(x, y, v) },
+    getStateBuffer() { return stateBuffers[currentIdx] },
+    getStateBuffers() { return stateBuffers },
+    getCurrentIndex() { return currentIdx },
+    isInBounds,
+    getValue,
+    setValue,
     toggleValue,
     nextStep,
     clear,
     random,
-    getLiveCount,
   }
-
 }
-
-

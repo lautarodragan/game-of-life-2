@@ -1,25 +1,18 @@
 import { WorldRenderer } from './WorldRenderer.js'
 import { HeadsUpDisplayRenderer } from './HeadsUpDisplayRenderer.js'
 
-export const Renderer = async (canvas, game, camera) => {
-  if (!navigator.gpu) {
-    throw new Error('WebGPU is not available in this browser.')
-  }
-
+export async function initWebGPU(canvas) {
+  if (!navigator.gpu) throw new Error('WebGPU is not available in this browser.')
   const adapter = await navigator.gpu.requestAdapter()
-  if (!adapter) {
-    throw new Error('No WebGPU adapter found.')
-  }
+  if (!adapter) throw new Error('No WebGPU adapter found.')
   const device = await adapter.requestDevice()
   const context = canvas.getContext('webgpu')
   const format = navigator.gpu.getPreferredCanvasFormat()
+  context.configure({ device, format, alphaMode: 'opaque' })
+  return { device, context, format }
+}
 
-  context.configure({
-    device,
-    format,
-    alphaMode: 'opaque',
-  })
-
+export const Renderer = (device, context, format, canvas, game, camera) => {
   const worldRenderer = WorldRenderer(device, format, game, camera)
   const headsUpDisplayRenderer = HeadsUpDisplayRenderer(device, format)
 

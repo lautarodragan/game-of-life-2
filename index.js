@@ -1,11 +1,13 @@
 import { GameOfLife } from './GameOfLife.js'
 import { Interval } from './Interval.js'
-import { Renderer } from './renderers/Renderer.js'
+import { Renderer, initWebGPU } from './renderers/Renderer.js'
 
 document.addEventListener('DOMContentLoaded', async () => {
   const canvas = document.getElementsByTagName('canvas')[0]
 
-  const game = GameOfLife(300, 300)
+  const { device, context, format } = await initWebGPU(canvas)
+
+  const game = GameOfLife(device, 300, 300)
   let pencil = 1
   const camera = {
     x: 0,
@@ -17,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const gameInterval = new Interval(game.nextStep, 200)
 
-  const renderer = await Renderer(canvas, game, camera)
+  const renderer = Renderer(device, context, format, canvas, game, camera)
   renderer.setSpeed(200)
 
   function refreshViewPortSize() {
