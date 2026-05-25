@@ -158,12 +158,15 @@ fn vs_lines_main(
 fn fs_main(in: VSOut) -> @location(0) vec4f {
   if (cam.mode == 1u) {
     let d = distance(in.uv, vec2f(0.5, 0.5));
+    if (d > .5) { discard; }
+    return vec4f(in.color, 1.0);
     // One-pixel smoothstep across the circle edge. fwidth(d) gives the
     // screen-space change in d per pixel, so the AA band auto-scales with zoom.
-    let aa = fwidth(d);
-    let alpha = 1.0 - smoothstep(0.49 - aa, 0.49, d);
-    if (alpha <= 0.0) { discard; }
-    return vec4f(in.color, alpha);
+    // let aa = fwidth(d);
+    // let alpha = 1.0 - smoothstep(0.49 - aa, 0.49, d);
+    // if (alpha <= 0.0) { discard; }
+    // return vec4f(in.color, alpha);
+    // (wound up liking d > .5 more than the smoothstep in the end)
   }
   return vec4f(in.color, 1.0);
 }
