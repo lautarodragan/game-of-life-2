@@ -51,9 +51,14 @@ export const HeadsUpDisplayRenderer = (device, format) => {
       return
     if (!program.areTexturesLoaded())
       return
-
+    
+    let sfps = fps > 400 ? '!!' : Math.round(fps).toString()
+    if (sfps.length < 3) {
+      sfps = ' ' + sfps
+    }
+    
     const stats = [
-      'FPS: ' + Math.round(fps).toString(),
+      'FPS:  ' + sfps,
       'SPEED: ' + speed.toString(),
       'DECAY: ' + decay.toString(),
     ]
