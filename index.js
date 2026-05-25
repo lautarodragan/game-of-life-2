@@ -157,10 +157,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else if (event.code === 'Minus') {
       event.preventDefault()
       renderer.textZoom -= .25
-    } else if (event.code === 'KeyT' && !event.ctrlKey) {
+    } else if (event.code === 'KeyH' && !event.ctrlKey) {
       event.preventDefault()
       renderer.toggleHud()
-    } else if (event.code === 'KeyC' && !event.ctrlKey) {
+    } else if (event.code === 'KeyS' && !event.ctrlKey) {
       event.preventDefault()
       renderer.cycleCellShape()
     } else if (event.code === 'Digit1') {

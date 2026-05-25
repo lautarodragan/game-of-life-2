@@ -27,8 +27,8 @@ export const HeadsUpDisplayRenderer = (device, format) => {
     'UP/DOWN: INC/DEC DECAY RATE',
     'F: FILL',
     'R: CLEAR',
-    'T: TOGGLE HUD',
-    'C: CYCLE CELL SHAPE',
+    'H: TOGGLE HUD',
+    'S: CYCLE CELL SHAPE',
     '1/2/3: PASTE GLIDER/LWSS/BICLOCK',
     'SPACE: PLAY/PAUSE',
   ]
