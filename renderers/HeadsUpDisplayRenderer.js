@@ -17,7 +17,7 @@ export const HeadsUpDisplayRenderer = (device, format) => {
   let fps = 0
   let speed = 0
   let decay = 0
-  let textZoom = 4
+  let textZoom = 2.5
   let visible = true
 
   const instructions = [
