@@ -179,10 +179,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     const sign = Math.sign(event.deltaY)
     const newZoom = camera.z - sign
 
-    if (newZoom >= 1) {
-      debugCamera()
-      camera.z = newZoom
-    }
+    if (newZoom < 1) return
+
+    // Keep the world point under the cursor stationary across the zoom change.
+    // Derived from the inverse of mouseEventToBoardCoords (see camera math above).
+    const ey = canvas.height - event.y
+    const dx = (event.x - camera.w / 2 + camera.x) / camera.z
+    const dy = (ey - camera.h / 2 + camera.y) / camera.z
+
+    camera.x += dx * (newZoom - camera.z)
+    camera.y += dy * (newZoom - camera.z)
+    camera.z = newZoom
+
+    debugCamera()
   })
 
   const pastePatternAtCursor = (pattern) => {
