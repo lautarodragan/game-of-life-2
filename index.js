@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     h: 1,
   }
 
-  const gameInterval = new Interval(game.nextStep, 100)
+  const gameInterval = new Interval(game.nextStep, 20)
 
   const renderer = Renderer(device, context, format, canvas, game, camera)
   renderer.setSpeed(gameInterval.intervalTime)
